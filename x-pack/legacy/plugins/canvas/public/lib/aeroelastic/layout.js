@@ -32,6 +32,9 @@ import {
   getConfiguration,
   getConstrainedShapesWithPreexistingAnnotations,
   getCursor,
+  getDragBox,
+  getDragBoxAnnotation,
+  getDragboxHighlighted,
   getDraggedPrimaryShape,
   getFocusedShape,
   getGroupAction,
@@ -57,6 +60,7 @@ import {
   getSelectionState,
   getSelectionStateFull,
   getShapes,
+  getShapesToHover,
   getSnappedShapes,
   getTransformIntents,
   resizeAnnotationsFunction,
@@ -93,9 +97,13 @@ const mouseTransformGesture = select(getMouseTransformGesture)(mouseTransformSta
 
 const transformGestures = mouseTransformGesture;
 
+const dragBox = select(getDragBox)(dragging, draggedShape, dragVector);
+
 const selectedShapeObjects = select(getSelectedShapeObjects)(scene, shapes);
 
 const selectedShapesPrev = select(getSelectedShapesPrev)(scene);
+
+const boxHighlightedShapes = select(getDragboxHighlighted)(dragBox, shapes);
 
 const selectionStateFull = select(getSelectionStateFull)(
   selectedShapesPrev,
@@ -104,7 +112,8 @@ const selectionStateFull = select(getSelectionStateFull)(
   hoveredShapes,
   mouseButton,
   metaHeld,
-  multiselectModifier
+  multiselectModifier,
+  boxHighlightedShapes
 );
 
 const selectionState = select(getSelectionState)(selectionStateFull);
@@ -138,9 +147,11 @@ const alignmentGuideAnnotations = select(getAlignmentGuideAnnotations)(
   draggedShape
 );
 
+const shapesToHover = select(getShapesToHover)(dragBox, hoveredShapes, boxHighlightedShapes);
+
 const hoverAnnotations = select(getHoverAnnotations)(
   configuration,
-  select(h => h.slice(0, 1))(hoveredShapes), // todo remove this slicing when box select arrives
+  shapesToHover,
   selectedPrimaryShapeIds,
   draggedShape
 );
@@ -201,6 +212,8 @@ const resizeAnnotations = select(resizeAnnotationsFunction)(configuration, group
 
 const rotationAnnotations = select(getRotationAnnotations)(configuration, grouping);
 
+const dragBoxAnnotation = select(getDragBoxAnnotation)(configuration, dragBox);
+
 const annotatedShapes = select(getAnnotatedShapes)(
   grouping,
   alignmentGuideAnnotations,
@@ -208,7 +221,8 @@ const annotatedShapes = select(getAnnotatedShapes)(
   rotationAnnotations,
   resizeAnnotations,
   rotationTooltipAnnotation,
-  adHocChildrenAnnotations
+  adHocChildrenAnnotations,
+  dragBoxAnnotation
 );
 
 const globalTransformShapes = select(cascadeProperties)(annotatedShapes);
