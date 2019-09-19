@@ -16,4 +16,4 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-export { CodeEditor } from './code_editor';
+export * from './code_editor';
