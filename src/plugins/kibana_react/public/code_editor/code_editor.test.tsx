@@ -18,6 +18,7 @@
  */
 
 import React from 'react';
+import sinon from 'sinon';
 import { CodeEditor } from './code_editor';
 import * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
 import { shallow } from 'enzyme';
@@ -51,4 +52,68 @@ test('is rendered', () => {
   );
 
   expect(component).toMatchSnapshot();
+});
+
+test('editor mount setup', () => {
+  const suggestionProvider = {
+    provideCompletionItems: (
+      model: monacoEditor.editor.ITextModel,
+      position: monacoEditor.Position
+    ) => ({ suggestions: [] }),
+  };
+  const signatureProvider = {
+    provideSignatureHelp: () => ({ signatures: [], activeParameter: 0, activeSignature: 0 }),
+  };
+  const hoverProvider = {
+    provideHover: (model: monacoEditor.editor.ITextModel, position: monacoEditor.Position) => ({
+      contents: [],
+    }),
+  };
+
+  const editorWillMount = jest.fn();
+
+  monacoEditor.languages.onLanguage = jest.fn((languageId, func) => {
+    expect(languageId).toBe('loglang');
+
+    // Call the function immediately so we can see our providers
+    // get setup without a monaco editor setting up completely
+    func();
+  }) as any;
+
+  monacoEditor.languages.registerCompletionItemProvider = jest.fn();
+  monacoEditor.languages.registerSignatureHelpProvider = jest.fn();
+  monacoEditor.languages.registerHoverProvider = jest.fn();
+
+  monacoEditor.editor.defineTheme = jest.fn();
+
+  const wrapper = shallow(
+    <CodeEditor
+      languageId="loglang"
+      value={logs}
+      onChange={() => {}}
+      editorWillMount={editorWillMount}
+      suggestionProvider={suggestionProvider}
+      signatureProvider={signatureProvider}
+      hoverProvider={hoverProvider}
+    />
+  );
+
+  const instance = wrapper.instance() as CodeEditor;
+  instance._editorWillMount(monacoEditor);
+
+  // Verify our mount callback will be called
+  expect(editorWillMount.mock.calls.length).toBe(1);
+
+  // Verify our theme will be setup
+  expect((monacoEditor.editor.defineTheme as jest.Mock).mock.calls.length).toBe(1);
+
+  // Verify our language features have been registered
+  expect((monacoEditor.languages.onLanguage as jest.Mock).mock.calls.length).toBe(1);
+  expect(
+    (monacoEditor.languages.registerCompletionItemProvider as jest.Mock).mock.calls.length
+  ).toBe(1);
+  expect(
+    (monacoEditor.languages.registerSignatureHelpProvider as jest.Mock).mock.calls.length
+  ).toBe(1);
+  expect((monacoEditor.languages.registerHoverProvider as jest.Mock).mock.calls.length).toBe(1);
 });
