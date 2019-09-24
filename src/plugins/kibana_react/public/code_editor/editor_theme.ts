@@ -26,7 +26,13 @@ import chrome from 'ui/chrome';
 // NOTE: For talk around where this theme information will ultimately live,
 // please see this discuss issue: https://github.com/elastic/kibana/issues/43814
 
-const IS_DARK_THEME = chrome.getUiSettingsClient().get('theme:darkMode');
+// Disable dark theme if unable to query client UI settings
+let IS_DARK_THEME;
+try {
+  IS_DARK_THEME = chrome.getUiSettingsClient().get('theme:darkMode');
+} finally {
+  IS_DARK_THEME = false;
+}
 
 const themeName = IS_DARK_THEME ? darkTheme : lightTheme;
 
