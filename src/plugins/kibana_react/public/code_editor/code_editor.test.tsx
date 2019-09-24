@@ -18,7 +18,6 @@
  */
 
 import React from 'react';
-import sinon from 'sinon';
 import { CodeEditor } from './code_editor';
 import * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
 import { shallow } from 'enzyme';
