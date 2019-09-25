@@ -17,13 +17,12 @@ import {
   EuiSpacer,
   EuiTitle,
   EuiToolTip,
-  EuiTextArea,
   EuiAccordion,
   EuiText,
   EuiButton,
 } from '@elastic/eui';
 import { DEFAULT_WORKPAD_CSS } from '../../../common/lib/constants';
-
+import { CSSEditor } from '../css_editor';
 export class WorkpadConfig extends PureComponent {
   static propTypes = {
     size: PropTypes.object.isRequired,
@@ -143,13 +142,7 @@ export class WorkpadConfig extends PureComponent {
           }
         >
           <div className="canvasArg__content">
-            <EuiTextArea
-              aria-label="Apply styles to all pages in this workpad"
-              value={css}
-              compressed
-              onChange={e => this.setState({ css: e.target.value })}
-              rows={10}
-            />
+            <CSSEditor value={css} onChange={val => this.setState({ css: val })} />
             <EuiSpacer size="s" />
             <EuiButton size="s" onClick={() => setWorkpadCSS(css || DEFAULT_WORKPAD_CSS)}>
               Apply stylesheet
