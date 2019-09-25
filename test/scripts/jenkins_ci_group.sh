@@ -11,7 +11,7 @@ fi
 export TEST_BROWSER_HEADLESS=1
 
 if [[ -z "$IS_PIPELINE_JOB" ]] ; then
-  yarn run grunt functionalTests:ensureAllTestsInCiGroup;
+  # yarn run grunt functionalTests:ensureAllTestsInCiGroup;
   node scripts/build --debug --oss;
 else
   installDir="$(realpath $PARENT_DIR/kibana/build/oss/kibana-*-SNAPSHOT-linux-x86_64)"
@@ -29,5 +29,5 @@ if [ "$CI_GROUP" == "1" ]; then
   checks-reporter-with-killswitch "Build kbn_tp_sample_panel_action" yarn build;
   cd -;
   yarn run grunt run:pluginFunctionalTestsRelease --from=source;
-  yarn run grunt run:interpreterFunctionalTestsRelease;
+  # yarn run grunt run:interpreterFunctionalTestsRelease;
 fi
