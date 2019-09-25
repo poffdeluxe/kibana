@@ -24,7 +24,7 @@ export default function ({ getService, getPageObjects }) {
   const testSubjects = getService('testSubjects');
   const PageObjects = getPageObjects(['common', 'header', 'home']);
 
-  describe('app navigation', function describeIndexTests() {
+  describe.only('app navigation', function describeIndexTests() {
 
     before(async () => {
       await PageObjects.common.navigateToApp('settings');

@@ -1,6 +1,6 @@
 JOB:
-  - intake
-  - firefoxSmoke
+  # - intake
+  # - firefoxSmoke
   - kibana-ciGroup1
   # - kibana-ciGroup2
   # - kibana-ciGroup3
