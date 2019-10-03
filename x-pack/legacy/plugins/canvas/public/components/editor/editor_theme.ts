@@ -3,12 +3,13 @@
  * or more contributor license agreements. Licensed under the Elastic License;
  * you may not use this file except in compliance with the Elastic License.
  */
-import * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
 
 import darkTheme from '@elastic/eui/dist/eui_theme_dark.json';
 import lightTheme from '@elastic/eui/dist/eui_theme_light.json';
 
 import chrome from 'ui/chrome';
+
+import * as monacoEditor from './monaco';
 
 // NOTE: For talk around where this theme information will ultimately live,
 // please see this discuss issue: https://github.com/elastic/kibana/issues/43814
