@@ -5,6 +5,11 @@
  */
 
 // This bit of hackiness is required because this isn't part of the main kibana bundle
+import React from 'react';
+import ReactDOM from 'react-dom';
+
+import { Chart, Settings, Axis, BarSeries } from '@elastic/charts';
+
 import 'jquery';
 import '../../lib/flot-charts';
 
@@ -15,7 +20,55 @@ import { text } from './plugins/text';
 
 const { plot: strings } = RendererStrings;
 
+function renderWithESC(domNode, config, handlers) {
+  const sample = (
+    <Chart className="story-chart">
+      <Settings
+        rotation={0}
+        animateData={false}
+        tooltip="none"
+        // theme={{
+        //   chartPaddings: {
+        //     left: 0,
+        //     right: 0,
+        //     top: 0,
+        //     bottom: 0,
+        //   },
+        //   chartMargins: {
+        //     left: 10,
+        //     right: 10,
+        //     top: 10,
+        //     bottom: 10,
+        //   },
+        // }}
+      />
+      <Axis id="bottom" position="bottom" title="Bottom axis" showOverlappingTicks />
+      <Axis id="left2" title="Left axis" position="left" />
+      <BarSeries
+        id="bars"
+        name="My test bars"
+        xScaleType="linear"
+        yScaleType="linear"
+        xAccessor={0}
+        yAccessors={[1]}
+        data={config.data[0].data}
+      />
+    </Chart>
+  );
+
+  ReactDOM.render(sample, domNode, () => handlers.done());
+
+  handlers.onDestroy(() => ReactDOM.unmountComponentAtNode(domNode));
+}
+
 const render = (domNode, config, handlers) => {
+  console.log(config);
+  console.log(config.data);
+
+  if (!config.options.useFlot) {
+    return renderWithESC(domNode, config, handlers);
+  }
+
   // TODO: OH NOES
   if (!includes($.plot.plugins, size)) {
     $.plot.plugins.push(size);
@@ -71,5 +124,6 @@ export const plot = () => ({
   name: 'plot',
   displayName: strings.getDisplayName(),
   help: strings.getHelpDescription(),
+  reuseDomNode: true,
   render,
 });

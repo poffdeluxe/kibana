@@ -20,6 +20,7 @@ import { getFunctionHelp } from '../../../../i18n';
 import { AxisConfig, PointSeries, Render, SeriesStyle, Palette, Legend } from '../../../../types';
 
 interface Arguments {
+  useFlot: boolean;
   seriesStyle: SeriesStyle[];
   defaultStyle: SeriesStyle;
   palette: Palette;
@@ -41,6 +42,11 @@ export function plot(): ExpressionFunction<'plot', PointSeries, Arguments, Rende
       types: ['pointseries'],
     },
     args: {
+      useFlot: {
+        types: ['boolean'],
+        help: 'Placeholder',
+        default: true,
+      },
       defaultStyle: {
         multi: false,
         types: ['seriesStyle'],
@@ -135,7 +141,8 @@ export function plot(): ExpressionFunction<'plot', PointSeries, Arguments, Rende
           left: 0,
         },
       };
-
+      console.log("MY ARGS")
+      console.log(args);
       const result = {
         type: 'render',
         as: 'plot',
@@ -143,6 +150,7 @@ export function plot(): ExpressionFunction<'plot', PointSeries, Arguments, Rende
           font: args.font,
           data: sortBy(data, 'label'),
           options: {
+            useFlot: !!args.useFlot,
             canvas: false,
             colors: getColorsFromPalette(args.palette, data.length),
             legend: getLegendConfig(args.legend, data.length),
