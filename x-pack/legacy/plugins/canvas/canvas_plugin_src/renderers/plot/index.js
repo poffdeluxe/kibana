@@ -8,7 +8,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { Chart, Settings, Axis, BarSeries } from '@elastic/charts';
+import { Chart, Settings, Axis, BarSeries, timeFormatter } from '@elastic/charts';
 
 import 'jquery';
 import '../../lib/flot-charts';
@@ -20,38 +20,33 @@ import { text } from './plugins/text';
 
 const { plot: strings } = RendererStrings;
 
+const dateFormatter = timeFormatter('HH:mm');
+
 function renderWithESC(domNode, config, handlers) {
+  const xAxis = {
+    scaleType: config.options.xaxis.mode === 'time' ? 'time' : 'linear',
+    tickFormat: config.options.xaxis.mode === 'time' ? dateFormatter : undefined,
+  };
+
+  const yAxis = {
+    scaleType: config.options.yaxis.mode === 'time' ? 'time' : 'linear',
+    tickFormat: config.options.yaxis.mode === 'time' ? dateFormatter : undefined,
+  };
+
   const sample = (
-    <Chart className="story-chart">
-      <Settings
-        rotation={0}
-        animateData={false}
-        tooltip="none"
-        // theme={{
-        //   chartPaddings: {
-        //     left: 0,
-        //     right: 0,
-        //     top: 0,
-        //     bottom: 0,
-        //   },
-        //   chartMargins: {
-        //     left: 10,
-        //     right: 10,
-        //     top: 10,
-        //     bottom: 10,
-        //   },
-        // }}
-      />
-      <Axis id="bottom" position="bottom" title="Bottom axis" showOverlappingTicks />
-      <Axis id="left2" title="Left axis" position="left" />
+    <Chart>
+      <Settings rotation={0} animateData={false} tooltip="none" theme={config.options.series} />
+      <Axis id="bottom" position="bottom" tickFormat={xAxis.tickFormat} />
+      <Axis id="left2" position="left" tickFormat={yAxis.tickFormat} />
       <BarSeries
         id="bars"
-        name="My test bars"
-        xScaleType="linear"
-        yScaleType="linear"
+        xScaleType={xAxis.scaleType}
+        yScaleType={yAxis.scaleType}
         xAccessor={0}
         yAccessors={[1]}
+        timeZone={'utc'}
         data={config.data[0].data}
+        barSeriesStyle={config.data[0].barSeriesStyle}
       />
     </Chart>
   );

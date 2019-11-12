@@ -15,6 +15,7 @@ import { getLegendConfig } from '../../../../common/lib/get_legend_config';
 import { getFlotAxisConfig } from './get_flot_axis_config';
 import { getFontSpec } from './get_font_spec';
 import { seriesStyleToFlot } from './series_style_to_flot';
+import { seriesStyleToCharts } from './series_style_to_es_charts';
 import { getTickHash } from './get_tick_hash';
 import { getFunctionHelp } from '../../../../i18n';
 import { AxisConfig, PointSeries, Render, SeriesStyle, Palette, Legend } from '../../../../types';
@@ -86,6 +87,8 @@ export function plot(): ExpressionFunction<'plot', PointSeries, Arguments, Rende
       },
     },
     fn: (context, args) => {
+      const seriesStyleAdapter = args.useFlot === false ? seriesStyleToCharts : seriesStyleToFlot;
+
       const seriesStyles: { [key: string]: SeriesStyle } =
         keyBy(args.seriesStyle || [], 'label') || {};
 
@@ -99,7 +102,7 @@ export function plot(): ExpressionFunction<'plot', PointSeries, Arguments, Rende
           ...seriesStyles[label as string],
         };
 
-        const flotStyle = seriesStyle ? seriesStyleToFlot(seriesStyle) : {};
+        const flotStyle = seriesStyle ? seriesStyleAdapter(seriesStyle) : {};
 
         return {
           ...flotStyle,
@@ -167,7 +170,7 @@ export function plot(): ExpressionFunction<'plot', PointSeries, Arguments, Rende
             }),
             series: {
               shadowSize: 0,
-              ...seriesStyleToFlot(args.defaultStyle),
+              ...seriesStyleAdapter(args.defaultStyle),
             },
           },
         },
