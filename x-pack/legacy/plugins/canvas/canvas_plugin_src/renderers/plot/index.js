@@ -8,7 +8,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { Chart, Settings, Axis, BarSeries, timeFormatter } from '@elastic/charts';
+import { Chart, Settings, Axis, BarSeries, LineSeries, timeFormatter } from '@elastic/charts';
 
 import 'jquery';
 import '../../lib/flot-charts';
@@ -22,32 +22,73 @@ const { plot: strings } = RendererStrings;
 
 const dateFormatter = timeFormatter('HH:mm');
 
-function renderWithESC(domNode, config, handlers) {
-  const xAxis = {
-    scaleType: config.options.xaxis.mode === 'time' ? 'time' : 'linear',
-    tickFormat: config.options.xaxis.mode === 'time' ? dateFormatter : undefined,
-  };
+const renderChart = (series, index, xAxis, yAxis) => {
+  const charts = [];
 
-  const yAxis = {
-    scaleType: config.options.yaxis.mode === 'time' ? 'time' : 'linear',
-    tickFormat: config.options.yaxis.mode === 'time' ? dateFormatter : undefined,
-  };
-
-  const sample = (
-    <Chart>
-      <Settings rotation={0} animateData={false} tooltip="none" theme={config.options.series} />
-      <Axis id="bottom" position="bottom" tickFormat={xAxis.tickFormat} />
-      <Axis id="left2" position="left" tickFormat={yAxis.tickFormat} />
+  if (series.barSeriesStyle) {
+    charts.push(
       <BarSeries
-        id="bars"
+        key={`bar-${index}`}
+        id={`bar-${index}`}
         xScaleType={xAxis.scaleType}
         yScaleType={yAxis.scaleType}
         xAccessor={0}
         yAccessors={[1]}
         timeZone={'utc'}
-        data={config.data[0].data}
-        barSeriesStyle={config.data[0].barSeriesStyle}
+        data={series.data}
+        barSeriesStyle={series.barSeriesStyle}
       />
+    );
+  }
+
+  if (series.lineSeriesStyle) {
+    charts.push(
+      <LineSeries
+        key={`line-${index}`}
+        id={`line-${index}`}
+        xScaleType={xAxis.scaleType}
+        yScaleType={yAxis.scaleType}
+        xAccessor={0}
+        yAccessors={[1]}
+        timeZone={'utc'}
+        data={series.data}
+        lineSeriesStyle={series.lineSeriesStyle}
+      />
+    );
+  }
+
+  return <React.Fragment key={index}>{charts}</React.Fragment>;
+};
+
+function renderWithESC(domNode, config, handlers) {
+  const xAxis = {
+    show: config.options.xaxis.show,
+    scaleType: config.options.xaxis.mode === 'time' ? 'time' : 'linear',
+    tickFormat: config.options.xaxis.mode === 'time' ? dateFormatter : undefined,
+  };
+
+  const yAxis = {
+    show: config.options.yaxis.show,
+    scaleType: config.options.yaxis.mode === 'time' ? 'time' : 'linear',
+    tickFormat: config.options.yaxis.mode === 'time' ? dateFormatter : undefined,
+  };
+
+  const theme = {
+    ...config.options.series,
+    colors: {
+      vizColors: config.options.colors,
+    },
+    scales: {
+      barsPadding: 0,
+    },
+  };
+
+  const sample = (
+    <Chart>
+      <Settings rotation={0} animateData={false} tooltip="none" theme={theme} />
+      {xAxis.show && <Axis id="bottom" position="bottom" tickFormat={xAxis.tickFormat} />}
+      {yAxis.show && <Axis id="left2" position="left" tickFormat={yAxis.tickFormat} />}
+      {config.data.map((series, i) => renderChart(series, i, xAxis, yAxis))}
     </Chart>
   );
 

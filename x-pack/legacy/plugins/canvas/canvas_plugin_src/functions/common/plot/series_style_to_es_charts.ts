@@ -12,24 +12,41 @@ export const seriesStyleToCharts = (seriesStyle: SeriesStyle) => {
     return {};
   }
 
-  // const lines = get<SeriesStyle['lines']>(seriesStyle, 'lines');
+  const lines = get<SeriesStyle['lines']>(seriesStyle, 'lines');
   const bars = get<SeriesStyle['bars']>(seriesStyle, 'bars');
   // const fill = get<SeriesStyle['fill']>(seriesStyle, 'fill');
   const color = get<SeriesStyle['color']>(seriesStyle, 'color');
   // const stack = get<SeriesStyle['stack']>(seriesStyle, 'stack');
   // const horizontal = get<SeriesStyle['horizontalBars']>(seriesStyle, 'horizontalBars', false);
 
-  if (bars <= 0) {
-    return {};
-  }
+  // if (bars <= 0) {
+  //   return {};
+  // }
 
-  return {
-    barSeriesStyle: {
+  // TODO: fix type
+  const retObj: any = {};
+
+  if (bars > 0) {
+    retObj.barSeriesStyle = {
       rect: {
         fill: color,
       },
-    },
-  };
+    };
+  }
+
+  if (lines > 0) {
+    retObj.lineSeriesStyle = {
+      line: {
+        strokeWidth: lines,
+        stroke: color,
+      },
+      point: {
+        visible: false,
+      },
+    };
+  }
+
+  return retObj;
 
   // const flotStyle = {
   //   numbers: {
