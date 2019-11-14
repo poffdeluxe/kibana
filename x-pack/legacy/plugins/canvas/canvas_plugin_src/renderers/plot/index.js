@@ -8,7 +8,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { Chart, Settings, Axis, BarSeries, LineSeries, timeFormatter } from '@elastic/charts';
+import { Chart, Settings, Axis, BarSeries, LineSeries, AreaSeries, timeFormatter } from '@elastic/charts';
 
 import 'jquery';
 import '../../lib/flot-charts';
@@ -53,6 +53,22 @@ const renderChart = (series, index, xAxis, yAxis) => {
         timeZone={'utc'}
         data={series.data}
         lineSeriesStyle={series.lineSeriesStyle}
+      />
+    );
+  }
+
+  if (series.areaSeriesStyle) {
+    charts.push(
+      <AreaSeries
+        key={`area-${index}`}
+        id={`area-${index}`}
+        xScaleType={xAxis.scaleType}
+        yScaleType={yAxis.scaleType}
+        xAccessor={0}
+        yAccessors={[1]}
+        timeZone={'utc'}
+        data={series.data}
+        areaSeriesStyle={series.areaSeriesStyle}
       />
     );
   }

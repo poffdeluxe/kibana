@@ -14,7 +14,7 @@ export const seriesStyleToCharts = (seriesStyle: SeriesStyle) => {
 
   const lines = get<SeriesStyle['lines']>(seriesStyle, 'lines');
   const bars = get<SeriesStyle['bars']>(seriesStyle, 'bars');
-  // const fill = get<SeriesStyle['fill']>(seriesStyle, 'fill');
+  const fill = get<SeriesStyle['fill']>(seriesStyle, 'fill');
   const color = get<SeriesStyle['color']>(seriesStyle, 'color');
   // const stack = get<SeriesStyle['stack']>(seriesStyle, 'stack');
   // const horizontal = get<SeriesStyle['horizontalBars']>(seriesStyle, 'horizontalBars', false);
@@ -35,15 +35,24 @@ export const seriesStyleToCharts = (seriesStyle: SeriesStyle) => {
   }
 
   if (lines > 0) {
-    retObj.lineSeriesStyle = {
-      line: {
-        strokeWidth: lines,
-        stroke: color,
-      },
-      point: {
-        visible: false,
-      },
-    };
+    if (fill > 0) {
+      retObj.areaSeriesStyle = {
+        line: {
+          strokeWidth: lines,
+          stroke: color,
+        },
+      };
+    } else {
+      retObj.lineSeriesStyle = {
+        line: {
+          strokeWidth: lines,
+          stroke: color,
+        },
+        point: {
+          visible: false,
+        },
+      };
+    }
   }
 
   return retObj;
