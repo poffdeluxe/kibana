@@ -41,6 +41,10 @@ export const seriesStyleToCharts = (seriesStyle: SeriesStyle) => {
           strokeWidth: lines,
           stroke: color,
         },
+        area: {
+          opacity: 0.1 * fill,
+          fill: color,
+        },
       };
     } else {
       retObj.lineSeriesStyle = {

@@ -8,7 +8,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { Chart, Settings, Axis, BarSeries, LineSeries, AreaSeries, timeFormatter } from '@elastic/charts';
+import { Chart, Settings, Axis, BarSeries, LineSeries, AreaSeries, niceTimeFormatter } from '@elastic/charts';
 
 import 'jquery';
 import '../../lib/flot-charts';
@@ -19,8 +19,6 @@ import { size } from './plugins/size';
 import { text } from './plugins/text';
 
 const { plot: strings } = RendererStrings;
-
-const dateFormatter = timeFormatter('HH:mm');
 
 const renderChart = (series, index, xAxis, yAxis) => {
   const charts = [];
@@ -76,21 +74,72 @@ const renderChart = (series, index, xAxis, yAxis) => {
   return <React.Fragment key={index}>{charts}</React.Fragment>;
 };
 
+function getBounds(data) {
+  let minX;
+  let maxX;
+  let minY;
+  let maxY;
+
+  data.forEach(series => {
+    series.data.forEach(d => {
+      minX = minX === undefined || d[0] <= minX ? d[0] : minX;
+      maxX = maxX === undefined || d[0] >= maxX ? d[0] : maxX;
+      minY = minY === undefined || d[1] < minY ? d[1] : minY;
+      maxY = maxY === undefined || d[1] >= maxY ? d[1] : maxY;
+    });
+  });
+
+  return {
+    minX,
+    maxX,
+    minY,
+    maxY,
+  };
+}
+
 function renderWithESC(domNode, config, handlers) {
+  // TODO:  we don't need to calculate this unless we're using the time formatter
+  const { minX, maxX, minY, maxY } = getBounds(config.data);
+
   const xAxis = {
     show: config.options.xaxis.show,
     scaleType: config.options.xaxis.mode === 'time' ? 'time' : 'linear',
-    tickFormat: config.options.xaxis.mode === 'time' ? dateFormatter : undefined,
+    tickFormat: config.options.xaxis.mode === 'time' ? niceTimeFormatter([minX, maxX]) : undefined,
+    tickLabelStyle: {
+      fontSize: config.options.xaxis.font.size,
+      fontFamily: config.options.xaxis.font.fontFamily,
+      fontStyle: config.options.xaxis.font.fontStyle,
+      fill: config.options.xaxis.font.color,
+      padding: 4,
+    },
   };
 
   const yAxis = {
     show: config.options.yaxis.show,
     scaleType: config.options.yaxis.mode === 'time' ? 'time' : 'linear',
-    tickFormat: config.options.yaxis.mode === 'time' ? dateFormatter : undefined,
+    tickFormat: config.options.yaxis.mode === 'time' ? niceTimeFormatter([minY, maxY]) : undefined,
+    tickLabelStyle: {
+      fontSize: config.options.yaxis.font.size,
+      fontFamily: config.options.yaxis.font.fontFamily,
+      fontStyle: config.options.yaxis.font.fontStyle,
+      fill: config.options.yaxis.font.color,
+      padding: 4,
+    },
   };
 
   const theme = {
     ...config.options.series,
+    axes: {
+      tickLineStyle: {
+        visible: false,
+      },
+      tickLabelStyle: {
+        fontSize: config.options.xaxis.font.size,
+        fontFamily: config.options.xaxis.font.fontFamily,
+        fontStyle: config.options.xaxis.font.fontStyle,
+        fill: config.options.xaxis.font.color,
+      },
+    },
     colors: {
       vizColors: config.options.colors,
     },
@@ -99,16 +148,30 @@ function renderWithESC(domNode, config, handlers) {
     },
   };
 
-  const sample = (
+  const chart = (
     <Chart>
       <Settings rotation={0} animateData={false} tooltip="none" theme={theme} />
-      {xAxis.show && <Axis id="bottom" position="bottom" tickFormat={xAxis.tickFormat} />}
-      {yAxis.show && <Axis id="left2" position="left" tickFormat={yAxis.tickFormat} />}
+      {xAxis.show && (
+        <Axis
+          id="x-axis"
+          position={config.options.xaxis.position || 'bottom'}
+          tickFormat={xAxis.tickFormat}
+          // tickLabelStyle={xAxis.tickLabelStyle}
+        />
+      )}
+      {yAxis.show && (
+        <Axis
+          id="y-axis"
+          position={config.options.yaxis.position}
+          tickFormat={yAxis.tickFormat}
+          // tickLabelStyle={yAxis.tickLabelStyle}
+        />
+      )}
       {config.data.map((series, i) => renderChart(series, i, xAxis, yAxis))}
     </Chart>
   );
 
-  ReactDOM.render(sample, domNode, () => handlers.done());
+  ReactDOM.render(chart, domNode, () => handlers.done());
 
   handlers.onDestroy(() => ReactDOM.unmountComponentAtNode(domNode));
 }
