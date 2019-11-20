@@ -111,10 +111,12 @@ export function plot(): ExpressionFunction<'plot', PointSeries, Arguments, Rende
             const attrs: {
               size?: number;
               text?: string;
+              xLabel?: string;
+              yLabel?: string;
             } = {};
 
-            const x = get(context.columns, 'x.type') === 'string' ? ticks.x.hash[point.x] : point.x;
-            const y = get(context.columns, 'y.type') === 'string' ? ticks.y.hash[point.y] : point.y;
+            const x = get(context.columns, 'x.type') === 'string' && args.useFlot ? ticks.x.hash[point.x] : point.x;
+            const y = get(context.columns, 'y.type') === 'string' && args.useFlot ? ticks.y.hash[point.y] : point.y;
 
             if (point.size != null) {
               attrs.size = point.size;
@@ -126,6 +128,9 @@ export function plot(): ExpressionFunction<'plot', PointSeries, Arguments, Rende
             if (point.text != null) {
               attrs.text = point.text;
             }
+
+            // attrs.xLabel = get(context.columns, 'x.type') === 'string' ? point.x : undefined;
+            // attrs.yLabel = get(context.columns, 'y.type') === 'string' ? point.y : undefined;
 
             return [x, y, attrs];
           }),

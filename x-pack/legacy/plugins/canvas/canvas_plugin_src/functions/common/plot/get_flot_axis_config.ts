@@ -17,7 +17,7 @@ interface Config {
   max?: number;
   tickSize?: number;
   ticks?: Array<[]>;
-  mode?: 'time';
+  mode?: 'time' | 'string';
   font?: Style | {};
 }
 
@@ -70,6 +70,8 @@ export const getFlotAxisConfig = (
         name,
       ]);
     }
+
+    config.mode = 'string';
   }
 
   if (axisType === 'date') {

@@ -8,7 +8,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { Chart, Settings, Axis, BarSeries, LineSeries, AreaSeries, niceTimeFormatter } from '@elastic/charts';
+import {
+  Chart,
+  Settings,
+  Axis,
+  BarSeries,
+  LineSeries,
+  AreaSeries,
+  niceTimeFormatter,
+} from '@elastic/charts';
 
 import 'jquery';
 import '../../lib/flot-charts';
@@ -32,6 +40,7 @@ const renderChart = (series, index, xAxis, yAxis) => {
         yScaleType={yAxis.scaleType}
         xAccessor={0}
         yAccessors={[1]}
+        stackAccessors={[0]}
         timeZone={'utc'}
         data={series.data}
         barSeriesStyle={series.barSeriesStyle}
@@ -103,7 +112,7 @@ function renderWithESC(domNode, config, handlers) {
 
   const xAxis = {
     show: config.options.xaxis.show,
-    scaleType: config.options.xaxis.mode === 'time' ? 'time' : 'linear',
+    scaleType: config.options.xaxis.mode === 'time' ? 'time' : 'ordinal',
     tickFormat: config.options.xaxis.mode === 'time' ? niceTimeFormatter([minX, maxX]) : undefined,
     tickLabelStyle: {
       fontSize: config.options.xaxis.font.size,
@@ -156,6 +165,7 @@ function renderWithESC(domNode, config, handlers) {
           id="x-axis"
           position={config.options.xaxis.position || 'bottom'}
           tickFormat={xAxis.tickFormat}
+          showOverlappingTicks
           // tickLabelStyle={xAxis.tickLabelStyle}
         />
       )}
@@ -164,6 +174,7 @@ function renderWithESC(domNode, config, handlers) {
           id="y-axis"
           position={config.options.yaxis.position}
           tickFormat={yAxis.tickFormat}
+          showOverlappingTicks
           // tickLabelStyle={yAxis.tickLabelStyle}
         />
       )}
