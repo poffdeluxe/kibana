@@ -40,7 +40,7 @@ const renderChart = (series, index, xAxis, yAxis) => {
         yScaleType={yAxis.scaleType}
         xAccessor={0}
         yAccessors={[1]}
-        stackAccessors={[0]}
+        // stackAccessors={[0]}
         timeZone={'utc'}
         data={series.data}
         barSeriesStyle={series.barSeriesStyle}
@@ -112,29 +112,42 @@ function renderWithESC(domNode, config, handlers) {
 
   const xAxis = {
     show: config.options.xaxis.show,
-    scaleType: config.options.xaxis.mode === 'time' ? 'time' : 'ordinal',
+    scaleType: config.options.xaxis.mode === 'time' ? 'time' : 'linear',
     tickFormat: config.options.xaxis.mode === 'time' ? niceTimeFormatter([minX, maxX]) : undefined,
-    tickLabelStyle: {
-      fontSize: config.options.xaxis.font.size,
-      fontFamily: config.options.xaxis.font.fontFamily,
-      fontStyle: config.options.xaxis.font.fontStyle,
-      fill: config.options.xaxis.font.color,
-      padding: 4,
-    },
+    // tickLabelStyle: {
+    //   fontSize: config.options.xaxis.font.size,
+    //   fontFamily: config.options.xaxis.font.fontFamily,
+    //   fontStyle: config.options.xaxis.font.fontStyle,
+    //   fill: config.options.xaxis.font.color,
+    //   padding: 4,
+    // },
   };
 
   const yAxis = {
     show: config.options.yaxis.show,
     scaleType: config.options.yaxis.mode === 'time' ? 'time' : 'linear',
     tickFormat: config.options.yaxis.mode === 'time' ? niceTimeFormatter([minY, maxY]) : undefined,
-    tickLabelStyle: {
-      fontSize: config.options.yaxis.font.size,
-      fontFamily: config.options.yaxis.font.fontFamily,
-      fontStyle: config.options.yaxis.font.fontStyle,
-      fill: config.options.yaxis.font.color,
-      padding: 4,
-    },
+    // tickLabelStyle: {
+    //   fontSize: config.options.yaxis.font.size,
+    //   fontFamily: config.options.yaxis.font.fontFamily,
+    //   fontStyle: config.options.yaxis.font.fontStyle,
+    //   fill: config.options.yaxis.font.color,
+    //   padding: 4,
+    // },
   };
+
+  let tickLabelStyle = {
+    padding: 4,
+  };
+  if (config.options.xaxis.font) {
+    tickLabelStyle = {
+      fontSize: config.options.xaxis.font.size,
+      fontFamily: config.options.xaxis.font.fontFamily,
+      fontStyle: config.options.xaxis.font.fontStyle,
+      fill: config.options.xaxis.font.color,
+      padding: 4,
+    }
+  }
 
   const theme = {
     ...config.options.series,
@@ -142,12 +155,7 @@ function renderWithESC(domNode, config, handlers) {
       tickLineStyle: {
         visible: false,
       },
-      tickLabelStyle: {
-        fontSize: config.options.xaxis.font.size,
-        fontFamily: config.options.xaxis.font.fontFamily,
-        fontStyle: config.options.xaxis.font.fontStyle,
-        fill: config.options.xaxis.font.color,
-      },
+      tickLabelStyle,
     },
     colors: {
       vizColors: config.options.colors,
