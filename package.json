@@ -70,7 +70,7 @@
     "spec_to_console": "node scripts/spec_to_console",
     "backport-skip-ci": "backport --prDescription \"[skip-ci]\"",
     "storybook": "node scripts/storybook",
-    "percy-storybook": "percy-storybook --build_dir=./storybook-build --widths=320,1280 --debug",
+    "percy-storybook": "percy-storybook",
     "cover:report": "nyc report --temp-dir target/kibana-coverage/functional --report-dir target/coverage/report --reporter=lcov && open ./target/coverage/report/lcov-report/index.html"
   },
   "repository": {
