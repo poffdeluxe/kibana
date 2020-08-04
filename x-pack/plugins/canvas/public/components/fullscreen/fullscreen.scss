@@ -1,5 +1,5 @@
 body.canvas-isFullscreen { // sass-lint:disable-line no-qualifying-elements
-  // following two rules are for overriding the header bar padding 
+  // following two rules are for overriding the header bar padding
   &.euiBody--headerIsFixed {
     padding-top: 0;
   }
@@ -52,7 +52,6 @@ body.canvas-isFullscreen { // sass-lint:disable-line no-qualifying-elements
     bottom: auto;
 
     .canvasWorkpad__buffer {
-      padding: 0;
       margin: 0;
     }
   }
