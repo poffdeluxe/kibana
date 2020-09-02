@@ -11,7 +11,7 @@ import { UiActionsStart } from '../../../../src/plugins/ui_actions/public';
 import { Start as InspectorStart } from '../../../../src/plugins/inspector/public';
 
 import { functions as browserFunctions } from './functions/browser';
-import { functions as overrideFunctions } from './functions/overrides';
+// import { functions as overrideFunctions } from './functions/overrides';
 import { typeFunctions } from './expression_types';
 import { renderFunctions, renderFunctionFactories } from './renderers';
 import { initializeElements } from './elements';
@@ -42,7 +42,7 @@ export type StartInitializer<T> = (core: CoreStart, plugins: StartDeps) => T;
 export class CanvasSrcPlugin implements Plugin<void, void, SetupDeps, StartDeps> {
   public setup(core: CoreSetup<StartDeps>, plugins: SetupDeps) {
     plugins.canvas.addFunctions(browserFunctions);
-    plugins.canvas.addFunctions(overrideFunctions);
+    // plugins.canvas.addFunctions(overrideFunctions);
     plugins.canvas.addTypes(typeFunctions);
 
     plugins.canvas.addRenderers(renderFunctions);

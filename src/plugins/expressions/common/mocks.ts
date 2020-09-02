@@ -23,7 +23,6 @@ export const createMockExecutionContext = <ExtraContext extends object = object>
   extraContext: ExtraContext = {} as ExtraContext
 ): ExecutionContext & ExtraContext => {
   const executionContext: ExecutionContext = {
-    defaultedArgs: [],
     getInitialInput: jest.fn(),
     variables: {},
     types: {},
