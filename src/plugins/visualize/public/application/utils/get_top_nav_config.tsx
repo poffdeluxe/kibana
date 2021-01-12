@@ -419,7 +419,6 @@ export const getTopNavConfig = (
                     tagOptions={tagOptions}
                     objectType={'visualization'}
                     onClose={() => {}}
-                    savedObjectsClient={savedObjectsClient}
                   />
                 );
               showSaveModal(saveModal, I18nContext);

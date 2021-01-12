@@ -21,7 +21,7 @@ import { PresentationUtilPlugin } from './plugin';
 
 export {
   SavedObjectSaveModalDashboard,
-  DashboardSaveModalProps,
+  SaveModalDashboardProps,
 } from './components/saved_object_save_modal_dashboard';
 
 export function plugin() {

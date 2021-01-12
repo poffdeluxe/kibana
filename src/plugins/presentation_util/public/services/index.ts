@@ -17,15 +17,23 @@
  * under the License.
  */
 
-import { PresentationUtilServices } from './services';
+import { SimpleSavedObject } from 'src/core/public';
+import { DashboardSavedObject } from 'src/plugins/dashboard/public';
+import { PluginServices } from './create';
 
-export interface PresentationUtilPluginSetup {
-  getServices: () => Promise<PresentationUtilServices>;
+export { serviceRegistry as kibanaServiceRegistry } from './kibana';
+export { serviceRegistry as stubServiceRegistry } from './stub';
+
+export interface PresentationDashboardsService {
+  findDashboards: (
+    query: string,
+    fields: string[]
+  ) => Promise<Array<SimpleSavedObject<DashboardSavedObject>>>;
+  findDashboardsByTitle: (title: string) => Promise<Array<SimpleSavedObject<DashboardSavedObject>>>;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface PresentationUtilPluginStart {}
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface PresentationUtilPluginSetupDeps {}
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface PresentationUtilPluginStartDeps {}
+export interface PresentationUtilServices {
+  dashboards: PresentationDashboardsService;
+}
+
+export const pluginServices = new PluginServices<PresentationUtilServices>();

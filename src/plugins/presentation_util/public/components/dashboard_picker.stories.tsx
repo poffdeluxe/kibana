@@ -17,15 +17,21 @@
  * under the License.
  */
 
-import { PresentationUtilServices } from './services';
+import React from 'react';
+import { action } from '@storybook/addon-actions';
 
-export interface PresentationUtilPluginSetup {
-  getServices: () => Promise<PresentationUtilServices>;
+import { DashboardPicker } from './dashboard_picker';
+
+export default {
+  component: DashboardPicker,
+  title: 'Dashboard Picker',
+  argTypes: {
+    isDisabled: {
+      control: 'boolean',
+    },
+  },
+};
+
+export function Example({ isDisabled }: { isDisabled: boolean }) {
+  return <DashboardPicker onChange={action('onChange')} isDisabled={isDisabled} />;
 }
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface PresentationUtilPluginStart {}
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface PresentationUtilPluginSetupDeps {}
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface PresentationUtilPluginStartDeps {}

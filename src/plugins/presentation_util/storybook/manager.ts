@@ -17,15 +17,16 @@
  * under the License.
  */
 
-import { PresentationUtilServices } from './services';
+import { addons } from '@storybook/addons';
+import { create } from '@storybook/theming';
+import { PANEL_ID } from '@storybook/addon-actions';
 
-export interface PresentationUtilPluginSetup {
-  getServices: () => Promise<PresentationUtilServices>;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface PresentationUtilPluginStart {}
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface PresentationUtilPluginSetupDeps {}
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface PresentationUtilPluginStartDeps {}
+addons.setConfig({
+  theme: create({
+    base: 'light',
+    brandTitle: 'Kibana Presentation Utility Storybook',
+    brandUrl: 'https://github.com/elastic/kibana/tree/master/src/plugins/presentation_util',
+  }),
+  showPanel: true.valueOf,
+  selectedPanel: PANEL_ID,
+});

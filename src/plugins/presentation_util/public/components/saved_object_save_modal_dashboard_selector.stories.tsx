@@ -17,15 +17,37 @@
  * under the License.
  */
 
-import { PresentationUtilServices } from './services';
+import React from 'react';
+import { action } from '@storybook/addon-actions';
 
-export interface PresentationUtilPluginSetup {
-  getServices: () => Promise<PresentationUtilServices>;
+import { SaveModalDashboardSelector } from './saved_object_save_modal_dashboard_selector';
+
+export default {
+  component: SaveModalDashboardSelector,
+  title: 'Save Modal Dashboard Selector',
+  description: 'A selector for determining where an object will be saved after it is created.',
+  argTypes: {
+    hasDocumentId: {
+      control: 'boolean',
+    },
+    copyOnSave: {
+      control: 'boolean',
+    },
+  },
+};
+
+export function Example({
+  copyOnSave,
+  hasDocumentId,
+}: {
+  copyOnSave: boolean;
+  hasDocumentId: boolean;
+}) {
+  return (
+    <SaveModalDashboardSelector
+      onSelect={action('onSelect')}
+      copyOnSave={copyOnSave}
+      documentId={hasDocumentId ? 'abc' : undefined}
+    />
+  );
 }
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface PresentationUtilPluginStart {}
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface PresentationUtilPluginSetupDeps {}
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface PresentationUtilPluginStartDeps {}

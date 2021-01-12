@@ -18,15 +18,42 @@
  */
 
 import { CoreSetup, CoreStart, Plugin } from '../../../core/public';
-import { PresentationUtilPluginSetup, PresentationUtilPluginStart } from './types';
+import { pluginServices, kibanaServiceRegistry } from './services';
+import {
+  PresentationUtilPluginSetup,
+  PresentationUtilPluginStart,
+  PresentationUtilPluginSetupDeps,
+  PresentationUtilPluginStartDeps,
+} from './types';
 
 export class PresentationUtilPlugin
-  implements Plugin<PresentationUtilPluginSetup, PresentationUtilPluginStart> {
-  public setup(core: CoreSetup): PresentationUtilPluginSetup {
-    return {};
+  implements
+    Plugin<
+      PresentationUtilPluginSetup,
+      PresentationUtilPluginStart,
+      PresentationUtilPluginSetupDeps,
+      PresentationUtilPluginStartDeps
+    > {
+  public setup(
+    coreSetup: CoreSetup<PresentationUtilPluginStart>,
+    setupPlugins: PresentationUtilPluginSetup
+  ): PresentationUtilPluginSetup {
+    const getServices = async () => {
+      if (!pluginServices.isStarted()) {
+        const [coreStart, startPlugins] = await coreSetup.getStartServices();
+        kibanaServiceRegistry.start({ coreStart, coreSetup, startPlugins, setupPlugins });
+        pluginServices.setRegistry(kibanaServiceRegistry);
+      }
+
+      return pluginServices.getServices();
+    };
+    return { getServices };
   }
 
-  public start(core: CoreStart): PresentationUtilPluginStart {
+  public async start(
+    _startCore: CoreStart,
+    _startPlugins: PresentationUtilPluginStartDeps
+  ): Promise<PresentationUtilPluginStart> {
     return {};
   }
 

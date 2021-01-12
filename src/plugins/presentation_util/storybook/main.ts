@@ -17,15 +17,14 @@
  * under the License.
  */
 
-import { PresentationUtilServices } from './services';
+import { Configuration } from 'webpack';
+import { defaultConfig } from '@kbn/storybook';
+import webpackConfig from '@kbn/storybook/target/webpack.config';
 
-export interface PresentationUtilPluginSetup {
-  getServices: () => Promise<PresentationUtilServices>;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface PresentationUtilPluginStart {}
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface PresentationUtilPluginSetupDeps {}
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface PresentationUtilPluginStartDeps {}
+module.exports = {
+  ...defaultConfig,
+  addons: ['@storybook/addon-essentials'],
+  webpackFinal: (config: Configuration) => {
+    return webpackConfig({ config });
+  },
+};

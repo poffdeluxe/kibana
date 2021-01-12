@@ -31,6 +31,7 @@ import {
   ScopedHistory,
 } from 'kibana/public';
 
+import { PresentationUtilPluginSetup } from '../../../../src/plugins/presentation_util/public';
 import {
   Storage,
   createKbnUrlTracker,
@@ -81,6 +82,7 @@ export interface VisualizePluginSetupDependencies {
   data: DataPublicPluginSetup;
   share?: SharePluginSetup;
   uiActions: UiActionsSetup;
+  presentationUtil: PresentationUtilPluginSetup;
 }
 
 export interface VisualizePluginSetup {
@@ -105,7 +107,14 @@ export class VisualizePlugin
 
   public async setup(
     core: CoreSetup<VisualizePluginStartDependencies>,
-    { home, urlForwarding, data, share, uiActions }: VisualizePluginSetupDependencies
+    {
+      home,
+      urlForwarding,
+      data,
+      share,
+      uiActions,
+      presentationUtil,
+    }: VisualizePluginSetupDependencies
   ) {
     const {
       appMounted,

@@ -17,15 +17,27 @@
  * under the License.
  */
 
-import { PresentationUtilServices } from './services';
+import React from 'react';
 
-export interface PresentationUtilPluginSetup {
-  getServices: () => Promise<PresentationUtilServices>;
+import { Title, Subtitle, Description, Primary, Stories } from '@storybook/addon-docs/blocks';
+
+import { pluginServices, stubServiceRegistry } from '../public/services';
+
+if (!pluginServices.isStarted()) {
+  stubServiceRegistry.start({});
+  pluginServices.setRegistry(stubServiceRegistry);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface PresentationUtilPluginStart {}
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface PresentationUtilPluginSetupDeps {}
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface PresentationUtilPluginStartDeps {}
+export const parameters = {
+  docs: {
+    page: () => (
+      <>
+        <Title />
+        <Subtitle />
+        <Description />
+        <Primary />
+        <Stories />
+      </>
+    ),
+  },
+};

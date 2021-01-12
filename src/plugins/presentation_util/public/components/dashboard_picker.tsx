@@ -17,18 +17,16 @@
  * under the License.
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
 import { i18n } from '@kbn/i18n';
 
 import { EuiComboBox } from '@elastic/eui';
-import { SavedObjectsClientContract } from '../../../../core/public';
-import { DashboardSavedObject } from '../../../../plugins/dashboard/public';
+import { pluginServices } from '../services';
 
 export interface DashboardPickerProps {
   onChange: (dashboard: { name: string; id: string } | null) => void;
   isDisabled: boolean;
-  savedObjectsClient: SavedObjectsClientContract;
 }
 
 interface DashboardOption {
@@ -37,34 +35,42 @@ interface DashboardOption {
 }
 
 export function DashboardPicker(props: DashboardPickerProps) {
-  const [dashboards, setDashboards] = useState<DashboardOption[]>([]);
+  const [dashboardOptions, setDashboardOptions] = useState<DashboardOption[]>([]);
   const [isLoadingDashboards, setIsLoadingDashboards] = useState(true);
   const [selectedDashboard, setSelectedDashboard] = useState<DashboardOption | null>(null);
+  const [query, setQuery] = useState('');
 
-  const { savedObjectsClient, isDisabled, onChange } = props;
+  const { isDisabled, onChange } = props;
+  const { dashboards } = useMemo(() => pluginServices.getServices(), []);
 
-  const fetchDashboards = useCallback(
-    async (query) => {
-      setIsLoadingDashboards(true);
-      setDashboards([]);
-
-      const { savedObjects } = await savedObjectsClient.find<DashboardSavedObject>({
-        type: 'dashboard',
-        search: query ? `${query}*` : '',
-        searchFields: ['title'],
-      });
-      if (savedObjects) {
-        setDashboards(savedObjects.map((d) => ({ value: d.id, label: d.attributes.title })));
-      }
-      setIsLoadingDashboards(false);
-    },
-    [savedObjectsClient]
-  );
-
-  // Initial dashboard load
   useEffect(() => {
-    fetchDashboards('');
-  }, [fetchDashboards]);
+    // We don't want to manipulate the React state if the component has been unmounted
+    // while we wait for the saved objects to return.
+    let cleanedUp = false;
+
+    const fetchDashboards = async () => {
+      setIsLoadingDashboards(true);
+      setDashboardOptions([]);
+
+      const objects = await dashboards.findDashboardsByTitle(query ? `${query}*` : '');
+
+      if (cleanedUp) {
+        return;
+      }
+
+      if (objects) {
+        setDashboardOptions(objects.map((d) => ({ value: d.id, label: d.attributes.title })));
+      }
+
+      setIsLoadingDashboards(false);
+    };
+
+    fetchDashboards();
+
+    return () => {
+      cleanedUp = true;
+    };
+  }, [dashboards, query]);
 
   return (
     <EuiComboBox
@@ -72,7 +78,7 @@ export function DashboardPicker(props: DashboardPickerProps) {
         defaultMessage: 'Search dashboards...',
       })}
       singleSelection={{ asPlainText: true }}
-      options={dashboards || []}
+      options={dashboardOptions || []}
       selectedOptions={!!selectedDashboard ? [selectedDashboard] : undefined}
       onChange={(e) => {
         if (e.length) {
@@ -83,7 +89,7 @@ export function DashboardPicker(props: DashboardPickerProps) {
           onChange(null);
         }
       }}
-      onSearchChange={fetchDashboards}
+      onSearchChange={setQuery}
       isDisabled={isDisabled}
       isLoading={isLoadingDashboards}
       compressed={true}

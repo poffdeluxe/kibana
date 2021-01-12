@@ -17,15 +17,32 @@
  * under the License.
  */
 
-import { PresentationUtilServices } from './services';
+import { PluginServiceFactory } from '../create';
+import { PresentationDashboardsService } from '..';
 
-export interface PresentationUtilPluginSetup {
-  getServices: () => Promise<PresentationUtilServices>;
+// TODO (clint): Create set of dashboards to stub and return.
+
+type DashboardsServiceFactory = PluginServiceFactory<PresentationDashboardsService>;
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface PresentationUtilPluginStart {}
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface PresentationUtilPluginSetupDeps {}
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface PresentationUtilPluginStartDeps {}
+export const dashboardsServiceFactory: DashboardsServiceFactory = () => ({
+  findDashboards: async (query: string = '', _fields: string[] = []) => {
+    if (!query) {
+      return [];
+    }
+
+    await sleep(3000);
+    return [];
+  },
+  findDashboardsByTitle: async (title: string) => {
+    if (!title) {
+      return [];
+    }
+
+    await sleep(3000);
+    return [];
+  },
+});

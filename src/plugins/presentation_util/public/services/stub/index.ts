@@ -17,15 +17,14 @@
  * under the License.
  */
 
-import { PresentationUtilServices } from './services';
+import { dashboardsServiceFactory } from './dashboards';
+import { PluginServiceProvider, PluginServiceProviders, PluginServiceRegistry } from '../create';
+import { PresentationUtilServices } from '..';
 
-export interface PresentationUtilPluginSetup {
-  getServices: () => Promise<PresentationUtilServices>;
-}
+export { dashboardsServiceFactory } from './dashboards';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface PresentationUtilPluginStart {}
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface PresentationUtilPluginSetupDeps {}
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface PresentationUtilPluginStartDeps {}
+export const providers: PluginServiceProviders<PresentationUtilServices> = {
+  dashboards: new PluginServiceProvider(dashboardsServiceFactory),
+};
+
+export const serviceRegistry = new PluginServiceRegistry<PresentationUtilServices>(providers);
