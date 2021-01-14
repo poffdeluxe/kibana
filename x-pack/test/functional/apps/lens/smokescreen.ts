@@ -48,7 +48,7 @@ export default function ({ getService, getPageObjects }: FtrProviderContext) {
         field: 'ip',
       });
 
-      await PageObjects.lens.save('Afancilenstest');
+      await PageObjects.lens.saveToLibrary('Afancilenstest');
 
       // Ensure the visualization shows up in the visualize list, and takes
       // us back to the visualization as we configured it.
@@ -304,7 +304,7 @@ export default function ({ getService, getPageObjects }: FtrProviderContext) {
         1
       );
 
-      await PageObjects.lens.save('twolayerchart');
+      await PageObjects.lens.saveToLibrary('twolayerchart');
       await testSubjects.click('lnsSuggestion-asDonut > lnsSuggestion');
 
       expect(await PageObjects.lens.getLayerCount()).to.eql(1);

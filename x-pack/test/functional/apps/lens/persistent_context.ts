@@ -88,7 +88,7 @@ export default function ({ getService, getPageObjects }: FtrProviderContext) {
         operation: 'avg',
         field: 'bytes',
       });
-      await PageObjects.lens.save('persistentcontext');
+      await PageObjects.lens.saveToLibrary('persistentcontext');
       await browser.refresh();
       await PageObjects.header.waitUntilLoadingHasFinished();
       const timeRange = await PageObjects.timePicker.getTimeConfig();

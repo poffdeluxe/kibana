@@ -48,7 +48,7 @@ export default function ({ getService, getPageObjects }: FtrProviderContext) {
       });
       expect(await find.allByCssSelector('.echLegendItem')).to.have.length(2);
 
-      await PageObjects.lens.save('Afancilenstest');
+      await PageObjects.lens.saveToLibrary('Afancilenstest');
 
       // Ensure the visualization shows up in the visualize list, and takes
       // us back to the visualization as we configured it.

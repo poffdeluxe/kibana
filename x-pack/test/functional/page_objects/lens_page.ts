@@ -270,10 +270,14 @@ export function LensPageProvider({ getService, getPageObjects }: FtrProviderCont
     /**
      * Save the current Lens visualization.
      */
-    async save(title: string, saveAsNew?: boolean, redirectToOrigin?: boolean) {
+    async saveToLibrary(title: string, saveAsNew?: boolean) {
       await PageObjects.header.waitUntilLoadingHasFinished();
       await testSubjects.click('lnsApp_saveButton');
       await testSubjects.setValue('savedObjectTitle', title);
+
+      const radioGroup = await testSubjects.find('addToDashboard-options');
+      const label = await radioGroup.findByCssSelector(`label[for="add-to-library-option"]`);
+      await label.click();
 
       const saveAsNewCheckboxExists = await testSubjects.exists('saveAsNewCheckbox');
       if (saveAsNewCheckboxExists) {
@@ -281,11 +285,23 @@ export function LensPageProvider({ getService, getPageObjects }: FtrProviderCont
         await testSubjects.setEuiSwitch('saveAsNewCheckbox', state);
       }
 
-      const redirectToOriginCheckboxExists = await testSubjects.exists('returnToOriginModeSwitch');
-      if (redirectToOriginCheckboxExists) {
-        const state = redirectToOrigin ? 'check' : 'uncheck';
-        await testSubjects.setEuiSwitch('returnToOriginModeSwitch', state);
-      }
+      await testSubjects.click('confirmSaveSavedObjectButton');
+      await retry.waitForWithTimeout('Save modal to disappear', 1000, () =>
+        testSubjects
+          .missingOrFail('confirmSaveSavedObjectButton')
+          .then(() => true)
+          .catch(() => false)
+      );
+    },
+
+    async saveToNewDashboard(title: string) {
+      await PageObjects.header.waitUntilLoadingHasFinished();
+      await testSubjects.click('lnsApp_saveButton');
+      await testSubjects.setValue('savedObjectTitle', title);
+
+      const radioGroup = await testSubjects.find('addToDashboard-options');
+      const label = await radioGroup.findByCssSelector(`label[for="new-dashboard-option"]`);
+      await label.click();
 
       await testSubjects.click('confirmSaveSavedObjectButton');
       await retry.waitForWithTimeout('Save modal to disappear', 1000, () =>
