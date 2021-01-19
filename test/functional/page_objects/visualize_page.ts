@@ -393,6 +393,11 @@ export function VisualizePageProvider({ getService, getPageObjects }: FtrProvide
 
       await testSubjects.click('confirmSaveSavedObjectButton');
 
+      // We can skip this if we're adding a visualization by-value
+      if (dashboardSelectorExists && addToDashboard) {
+        return '';
+      }
+
       // Confirm that the Visualization has actually been saved
       await testSubjects.existOrFail('saveVisualizationSuccess');
       const message = await common.closeToast();

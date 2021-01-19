@@ -28,5 +28,6 @@ export default function ({ loadTestFile, getService }: FtrProviderContext) {
     });
 
     loadTestFile(require.resolve('./dashboard_embedding'));
+    loadTestFile(require.resolve('./add_to_dashboard'));
   });
 }
