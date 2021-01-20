@@ -17,16 +17,22 @@
  * under the License.
  */
 
-import { dashboardsServiceFactory } from './dashboards';
-import { capabilitiesServiceFactory } from './capabilities';
-import { PluginServiceProvider, PluginServiceProviders, PluginServiceRegistry } from '../create';
-import { PresentationUtilServices } from '..';
+import { PresentationUtilPluginSetup, PresentationUtilPluginStart } from '../../types';
+import { KibanaPluginServiceFactory } from '../create';
+import { PresentationCapabilitiesService } from '..';
 
-export { dashboardsServiceFactory } from './dashboards';
+export type CapabilitiesServiceFactory = KibanaPluginServiceFactory<
+  PresentationCapabilitiesService,
+  PresentationUtilPluginSetup,
+  PresentationUtilPluginStart
+>;
 
-export const providers: PluginServiceProviders<PresentationUtilServices> = {
-  dashboards: new PluginServiceProvider(dashboardsServiceFactory),
-  capabilities: new PluginServiceProvider(capabilitiesServiceFactory),
+export const capabilitiesServiceFactory: CapabilitiesServiceFactory = ({ coreStart }) => {
+  const getDashboardCapabilities = () => {
+    return coreStart.application.capabilities.dashboard;
+  };
+
+  return {
+    getDashboardCapabilities,
+  };
 };
-
-export const serviceRegistry = new PluginServiceRegistry<PresentationUtilServices>(providers);

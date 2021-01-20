@@ -37,13 +37,16 @@ import { DashboardPicker, DashboardPickerProps } from './dashboard_picker';
 import './saved_object_save_modal_dashboard.scss';
 
 export interface SaveModalDashboardSelectorProps {
+  canCreateNewDashboards: boolean;
+  canEditDashboards: boolean;
+
   copyOnSave: boolean;
   documentId?: string;
   onSelect: DashboardPickerProps['onChange'];
 }
 
 export function SaveModalDashboardSelector(props: SaveModalDashboardSelectorProps) {
-  const { documentId, onSelect, copyOnSave } = props;
+  const { canCreateNewDashboards, canEditDashboards, documentId, onSelect, copyOnSave } = props;
 
   const [dashboardOption, setDashboardOption] = useState<'new' | 'existing' | null>(
     documentId ? null : 'existing'
@@ -79,38 +82,49 @@ export function SaveModalDashboardSelector(props: SaveModalDashboardSelectorProp
       >
         <EuiPanel color="subdued" hasShadow={false}>
           <div>
-            <EuiRadio
-              checked={dashboardOption === 'existing'}
-              id="existing"
-              name="dashboard-option"
-              label={i18n.translate(
-                'presentationUtil.saveModalDashboard.existingDashboardOptionLabel',
-                {
-                  defaultMessage: 'Existing',
-                }
-              )}
-              onChange={() => setDashboardOption('existing')}
-            />
-
-            <div className="savAddDashboard__searchDashboards">
-              <DashboardPicker isDisabled={dashboardOption !== 'existing'} onChange={onSelect} />
-            </div>
-
-            <EuiSpacer size="s" />
-
-            <EuiRadio
-              checked={dashboardOption === 'new'}
-              id="new"
-              name="dashboard-option"
-              label={i18n.translate('presentationUtil.saveModalDashboard.newDashboardOptionLabel', {
-                defaultMessage: 'New',
-              })}
-              onChange={() => setDashboardOption('new')}
-              disabled={isDisabled}
-            />
-
-            <EuiSpacer size="s" />
-
+            {canEditDashboards && (
+              <>
+                {' '}
+                <EuiRadio
+                  checked={dashboardOption === 'existing'}
+                  id="existing"
+                  name="dashboard-option"
+                  label={i18n.translate(
+                    'presentationUtil.saveModalDashboard.existingDashboardOptionLabel',
+                    {
+                      defaultMessage: 'Existing',
+                    }
+                  )}
+                  onChange={() => setDashboardOption('existing')}
+                />
+                <div className="savAddDashboard__searchDashboards">
+                  <DashboardPicker
+                    isDisabled={dashboardOption !== 'existing'}
+                    onChange={onSelect}
+                  />
+                </div>
+                <EuiSpacer size="s" />
+              </>
+            )}
+            {canCreateNewDashboards && (
+              <>
+                {' '}
+                <EuiRadio
+                  checked={dashboardOption === 'new'}
+                  id="new"
+                  name="dashboard-option"
+                  label={i18n.translate(
+                    'presentationUtil.saveModalDashboard.newDashboardOptionLabel',
+                    {
+                      defaultMessage: 'New',
+                    }
+                  )}
+                  onChange={() => setDashboardOption('new')}
+                  disabled={isDisabled}
+                />
+                <EuiSpacer size="s" />
+              </>
+            )}
             <EuiRadio
               checked={dashboardOption === null}
               id="library"

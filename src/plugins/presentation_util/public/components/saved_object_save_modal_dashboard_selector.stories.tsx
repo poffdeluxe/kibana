@@ -33,18 +33,32 @@ export default {
     copyOnSave: {
       control: 'boolean',
     },
+    canCreateNewDashboards: {
+      control: 'boolean',
+      defaultValue: true,
+    },
+    canEditDashboards: {
+      control: 'boolean',
+      defaultValue: true,
+    },
   },
 };
 
 export function Example({
+  canCreateNewDashboards,
+  canEditDashboards,
   copyOnSave,
   hasDocumentId,
 }: {
+  canCreateNewDashboards: boolean;
+  canEditDashboards: boolean;
   copyOnSave: boolean;
   hasDocumentId: boolean;
 }) {
   return (
     <SaveModalDashboardSelector
+      canCreateNewDashboards={canCreateNewDashboards}
+      canEditDashboards={canEditDashboards}
       onSelect={action('onSelect')}
       copyOnSave={copyOnSave}
       documentId={hasDocumentId ? 'abc' : undefined}

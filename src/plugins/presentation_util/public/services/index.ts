@@ -32,8 +32,13 @@ export interface PresentationDashboardsService {
   findDashboardsByTitle: (title: string) => Promise<Array<SimpleSavedObject<DashboardSavedObject>>>;
 }
 
+export interface PresentationCapabilitiesService {
+  getDashboardCapabilities: () => Record<string, Record<string, boolean> | boolean>;
+}
+
 export interface PresentationUtilServices {
   dashboards: PresentationDashboardsService;
+  capabilities: PresentationCapabilitiesService;
 }
 
 export const pluginServices = new PluginServices<PresentationUtilServices>();

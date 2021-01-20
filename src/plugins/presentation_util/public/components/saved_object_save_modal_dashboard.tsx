@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 
 import { i18n } from '@kbn/i18n';
 
@@ -26,6 +26,8 @@ import {
   SaveModalState,
   SavedObjectSaveModal,
 } from '../../../../plugins/saved_objects/public';
+
+import { pluginServices } from '../services';
 
 import './saved_object_save_modal_dashboard.scss';
 import { SaveModalDashboardSelector } from './saved_object_save_modal_dashboard_selector';
@@ -49,22 +51,34 @@ export function SavedObjectSaveModalDashboard(props: SaveModalDashboardProps) {
   const { id: documentId } = documentInfo;
   const initialCopyOnSave = !Boolean(documentId);
 
+  const { capabilities } = useMemo(() => pluginServices.getServices(), []);
+  const dashboardCapabilities = capabilities.getDashboardCapabilities();
+
+  const canAccessDashboards = Boolean(dashboardCapabilities.show);
+  const canCreateNewDashboards = Boolean(dashboardCapabilities.createNew);
+  const canEditDashboards = !Boolean(dashboardCapabilities.hideWriteControls);
+
+  const disableDashboardOptions =
+    canAccessDashboards || (!canCreateNewDashboards && !canEditDashboards);
+
   const [dashboardOption, setDashboardOption] = useState<'new' | 'existing' | null>(
-    documentId ? null : 'existing'
+    documentId || disableDashboardOptions ? null : 'existing'
   );
   const [selectedDashboard, setSelectedDashboard] = useState<{ id: string; name: string } | null>(
     null
   );
   const [copyOnSave, setCopyOnSave] = useState<boolean>(initialCopyOnSave);
 
-  const rightOptions = () => (
-    <SaveModalDashboardSelector
-      onSelect={(dash) => {
-        setSelectedDashboard(dash);
-      }}
-      {...{ copyOnSave, documentId }}
-    />
-  );
+  const rightOptions = !disableDashboardOptions
+    ? () => (
+        <SaveModalDashboardSelector
+          onSelect={(dash) => {
+            setSelectedDashboard(dash);
+          }}
+          {...{ copyOnSave, documentId, canCreateNewDashboards, canEditDashboards }}
+        />
+      )
+    : null;
 
   const onCopyOnSaveChange = (newCopyOnSave: boolean) => {
     setDashboardOption(null);

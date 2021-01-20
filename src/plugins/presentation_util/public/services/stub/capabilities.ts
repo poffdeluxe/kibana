@@ -17,16 +17,17 @@
  * under the License.
  */
 
-import { dashboardsServiceFactory } from './dashboards';
-import { capabilitiesServiceFactory } from './capabilities';
-import { PluginServiceProvider, PluginServiceProviders, PluginServiceRegistry } from '../create';
-import { PresentationUtilServices } from '..';
+import { PluginServiceFactory } from '../create';
+import { PresentationCapabilitiesService } from '..';
 
-export { dashboardsServiceFactory } from './dashboards';
+type CapabilitiesServiceFactory = PluginServiceFactory<PresentationCapabilitiesService>;
 
-export const providers: PluginServiceProviders<PresentationUtilServices> = {
-  dashboards: new PluginServiceProvider(dashboardsServiceFactory),
-  capabilities: new PluginServiceProvider(capabilitiesServiceFactory),
-};
-
-export const serviceRegistry = new PluginServiceRegistry<PresentationUtilServices>(providers);
+export const capabilitiesServiceFactory: CapabilitiesServiceFactory = () => ({
+  getDashboardCapabilities: () => {
+    return {
+      show: true,
+      createNew: true,
+      hideWriteControls: false,
+    };
+  },
+});
