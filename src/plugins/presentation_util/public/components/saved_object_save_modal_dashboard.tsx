@@ -59,7 +59,7 @@ export function SavedObjectSaveModalDashboard(props: SaveModalDashboardProps) {
   const canEditDashboards = !Boolean(dashboardCapabilities.hideWriteControls);
 
   const disableDashboardOptions =
-    canAccessDashboards || (!canCreateNewDashboards && !canEditDashboards);
+    !canAccessDashboards || (!canCreateNewDashboards && !canEditDashboards);
 
   const [dashboardOption, setDashboardOption] = useState<'new' | 'existing' | null>(
     documentId || disableDashboardOptions ? null : 'existing'
