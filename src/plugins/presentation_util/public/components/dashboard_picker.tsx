@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { i18n } from '@kbn/i18n';
 
@@ -41,7 +41,8 @@ export function DashboardPicker(props: DashboardPickerProps) {
   const [query, setQuery] = useState('');
 
   const { isDisabled, onChange } = props;
-  const { dashboards } = useMemo(() => pluginServices.getServices(), []);
+  const { dashboards } = pluginServices.getContextHooks();
+  const { findDashboardsByTitle } = dashboards.useContext();
 
   useEffect(() => {
     // We don't want to manipulate the React state if the component has been unmounted
@@ -52,7 +53,7 @@ export function DashboardPicker(props: DashboardPickerProps) {
       setIsLoadingDashboards(true);
       setDashboardOptions([]);
 
-      const objects = await dashboards.findDashboardsByTitle(query ? `${query}*` : '');
+      const objects = await findDashboardsByTitle(query ? `${query}*` : '');
 
       if (cleanedUp) {
         return;
@@ -70,7 +71,7 @@ export function DashboardPicker(props: DashboardPickerProps) {
     return () => {
       cleanedUp = true;
     };
-  }, [dashboards, query]);
+  }, [findDashboardsByTitle, query]);
 
   return (
     <EuiComboBox

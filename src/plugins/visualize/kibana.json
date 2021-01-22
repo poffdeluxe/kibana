@@ -1,8 +1,16 @@
 {
   "id": "visualize",
-  "version": "kibana",
-  "server": true,
-  "ui": true,
+  "optionalPlugins": [
+    "home",
+    "share",
+    "savedObjectsTaggingOss"
+  ],
+  "requiredBundles": [
+    "kibanaUtils",
+    "kibanaReact",
+    "home",
+    "discover"
+  ],
   "requiredPlugins": [
     "data",
     "urlForwarding",
@@ -14,15 +22,7 @@
     "uiActions",
     "presentationUtil"
   ],
-  "optionalPlugins": [
-    "home",
-    "share",
-    "savedObjectsTaggingOss"
-  ],
-  "requiredBundles": [
-    "kibanaUtils",
-    "kibanaReact",
-    "home",
-    "discover"
-  ]
+  "server": true,
+  "ui": true,
+  "version": "kibana"
 }

@@ -18,7 +18,8 @@
  */
 
 import { CoreSetup, CoreStart, Plugin } from '../../../core/public';
-import { pluginServices, kibanaServiceRegistry } from './services';
+import { pluginServices } from './services';
+import { registry } from './services/kibana';
 import {
   PresentationUtilPluginSetup,
   PresentationUtilPluginStart,
@@ -35,26 +36,21 @@ export class PresentationUtilPlugin
       PresentationUtilPluginStartDeps
     > {
   public setup(
-    coreSetup: CoreSetup<PresentationUtilPluginStart>,
-    setupPlugins: PresentationUtilPluginSetup
+    _coreSetup: CoreSetup<PresentationUtilPluginSetup>,
+    _setupPlugins: PresentationUtilPluginSetupDeps
   ): PresentationUtilPluginSetup {
-    const getServices = async () => {
-      if (!pluginServices.isStarted()) {
-        const [coreStart, startPlugins] = await coreSetup.getStartServices();
-        kibanaServiceRegistry.start({ coreStart, coreSetup, startPlugins, setupPlugins });
-        pluginServices.setRegistry(kibanaServiceRegistry);
-      }
-
-      return pluginServices.getServices();
-    };
-    return { getServices };
+    return {};
   }
 
   public async start(
-    _startCore: CoreStart,
-    _startPlugins: PresentationUtilPluginStartDeps
+    coreStart: CoreStart,
+    startPlugins: PresentationUtilPluginStartDeps
   ): Promise<PresentationUtilPluginStart> {
-    return {};
+    pluginServices.setRegistry(registry.start({ coreStart, startPlugins }));
+
+    return {
+      ContextProvider: pluginServices.getContextProvider(),
+    };
   }
 
   public stop() {}

@@ -16,13 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { mapValues, values } from 'lodash';
-import { PluginServiceProviders, PluginServiceProvider } from './provider';
 
-type Provider<Services, StartParameters> = PluginServiceProvider<
-  Services[keyof Services],
-  StartParameters
->;
+import React from 'react';
+import { values } from 'lodash';
+import { PluginServiceProvider, PluginServiceProviders } from './provider';
 
 /**
  * A `PluginServiceRegistry` maintains a set of service providers which can be collectively
@@ -34,41 +31,51 @@ type Provider<Services, StartParameters> = PluginServiceProvider<
  */
 export class PluginServiceRegistry<Services, StartParameters = {}> {
   private providers: PluginServiceProviders<Services, StartParameters>;
-  private services: Services | null = null;
+  private _isStarted = false;
 
   constructor(providers: PluginServiceProviders<Services, StartParameters>) {
     this.providers = providers;
   }
 
   isStarted() {
-    return !!this.services;
+    return this._isStarted;
+  }
+
+  getServiceProviders() {
+    if (!this._isStarted) {
+      throw new Error('Registry not started');
+    }
+    return this.providers;
+  }
+
+  getContextProvider() {
+    const provider: React.FC = ({ children }) => (
+      <>
+        {values<PluginServiceProvider<any, any>>(this.getServiceProviders()).reduceRight(
+          (acc, serviceProvider) => {
+            return <serviceProvider.Provider>{acc}</serviceProvider.Provider>;
+          },
+          children
+        )}
+      </>
+    );
+
+    return provider;
   }
 
   start(params: StartParameters) {
-    values<Provider<Services, StartParameters>>(this.providers).map((provider) =>
-      provider.start(params)
+    values<PluginServiceProvider<any, any>>(this.providers).map((serviceProvider) =>
+      serviceProvider.start(params)
     );
-    this.services = mapValues(this.providers, (provider) => provider.getService()) as Services;
+    this._isStarted = true;
+    return this;
   }
 
   stop() {
-    values<Provider<Services, StartParameters>>(this.providers).map((provider) => provider.stop());
-    this.services = null;
-  }
-
-  public getServices(): Services {
-    if (this.services === null) {
-      throw new Error('Registry not started');
-    }
-
-    return this.services;
-  }
-
-  public getService(name: keyof Services): Services[keyof Services] {
-    if (this.services === null) {
-      throw new Error('Registry not started');
-    }
-
-    return this.services[name];
+    values<PluginServiceProvider<any, any>>(this.providers).map((serviceProvider) =>
+      serviceProvider.stop()
+    );
+    this._isStarted = false;
+    return this;
   }
 }

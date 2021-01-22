@@ -17,6 +17,7 @@
  * under the License.
  */
 
+import React, { createContext, useContext } from 'react';
 import { PluginServiceFactory } from './factory';
 
 /**
@@ -26,48 +27,54 @@ import { PluginServiceFactory } from './factory';
  * The `StartParameters` generic determines what parameters are expected to
  * start the service.
  */
-export type PluginServiceProviders<Services, StartParameters = {}> = Record<
-  keyof Services,
-  PluginServiceProvider<Services[keyof Services], StartParameters>
->;
+export type PluginServiceProviders<Services, StartParameters = {}> = {
+  [K in keyof Services]: PluginServiceProvider<Services[K], StartParameters>;
+};
 
 /**
- * A class which uses a given factory to start, stop or provide a service.
+ * An object which uses a given factory to start, stop or provide a service.
  *
  * The `Service` generic determines the shape of the API being produced.
  * The `StartParameters` generic determines what parameters are expected to
  * start the service.
  */
-export class PluginServiceProvider<Service, StartParameters = {}> {
-  protected factory: PluginServiceFactory<Service, StartParameters>;
-  private service: Service | null = null;
+export class PluginServiceProvider<Service extends {}, StartParameters = {}> {
+  private factory: PluginServiceFactory<Service, StartParameters>;
+  private context = createContext<Service | null>(null);
+  private pluginService: Service | null = null;
+  public readonly Provider: React.FC = ({ children }) => {
+    return <this.context.Provider value={this.getService()}>{children}</this.context.Provider>;
+  };
 
   constructor(factory: PluginServiceFactory<Service, StartParameters>) {
     this.factory = factory;
+    this.context.displayName = 'PluginServiceContext';
   }
 
-  getService() {
-    if (!this.service) {
+  private getService() {
+    if (!this.pluginService) {
       throw new Error('Service not started');
     }
-    return this.service;
-  }
-
-  setFactory(factory: PluginServiceFactory<Service, StartParameters>) {
-    this.factory = factory;
-    this.service = null;
-  }
-
-  protected setService(service: Service) {
-    this.service = service;
+    return this.pluginService;
   }
 
   start(params: StartParameters) {
-    const service = this.factory(params);
-    this.setService(service);
+    this.pluginService = this.factory(params);
+  }
+
+  useContext() {
+    return () => {
+      const service = useContext(this.context);
+
+      if (!service) {
+        throw new Error('Provider is not set up correctly');
+      }
+
+      return service;
+    };
   }
 
   stop() {
-    this.service = null;
+    this.pluginService = null;
   }
 }

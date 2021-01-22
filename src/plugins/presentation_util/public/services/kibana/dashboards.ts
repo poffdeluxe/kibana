@@ -19,14 +19,13 @@
 
 import { DashboardSavedObject } from 'src/plugins/dashboard/public';
 
-import { PresentationUtilPluginSetup, PresentationUtilPluginStart } from '../../types';
+import { PresentationUtilPluginStartDeps } from '../../types';
 import { KibanaPluginServiceFactory } from '../create';
 import { PresentationDashboardsService } from '..';
 
 export type DashboardsServiceFactory = KibanaPluginServiceFactory<
   PresentationDashboardsService,
-  PresentationUtilPluginSetup,
-  PresentationUtilPluginStart
+  PresentationUtilPluginStartDeps
 >;
 
 export const dashboardsServiceFactory: DashboardsServiceFactory = ({ coreStart }) => {

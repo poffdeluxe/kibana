@@ -8,7 +8,7 @@ tags: ['kibana', 'presentation', 'services']
 related: ['presentationUtilPlugin']
 ---
 
-While Kibana provides a `useKibana` hook for use in a plugin, the number services it provides is very large.  This presents a number of difficulties:
+While Kibana provides a `useKibana` hook for use in a plugin, the number of services it provides is very large.  This presents a set of difficulties:
 
 - a direct dependency upon the Kibana environment;
 - a requirement to mock the full Kibana environment when testing or using Storybook;
@@ -84,7 +84,7 @@ By contrast, a registry that uses Kibana can provide `KibanaPluginServiceParams`
 ```ts
 export const providers: PluginServiceProviders<
   PresentationUtilServices,
-  KibanaPluginServiceParams<PresentationUtilPluginSetup, PresentationUtilPluginStart>
+  KibanaPluginServiceParams<PresentationUtilPluginStart>
 > = {
   dashboards: new PluginServiceProvider(dashboardsServiceFactory),
   foo: new PluginServiceProvider(fooServiceFactory),
@@ -92,7 +92,7 @@ export const providers: PluginServiceProviders<
 
 export const serviceRegistry = new PluginServiceRegistry<
   PresentationUtilServices,
-  KibanaPluginServiceParams<PresentationUtilPluginSetup, PresentationUtilPluginStart>
+  KibanaPluginServiceParams<PresentationUtilPluginStart>
 >(providers);
 ```
 </DocAccordion>
@@ -125,14 +125,11 @@ and a factory for a Kibana version might look like this:
 ```ts
 export type FooServiceFactory = KibanaPluginServiceFactory<
   PresentationFooService,
-  PresentationUtilPluginSetup,
   PresentationUtilPluginStart
 >;
 
 export const fooServiceFactory: FooServiceFactory = ({
   coreStart,
-  coreSetup,
-  setupPlugins,
   startPlugins,
 }) => {
   // ...do something with Kibana services...

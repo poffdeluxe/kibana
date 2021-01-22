@@ -18,15 +18,12 @@
  */
 
 import React from 'react';
-
+import { addDecorator } from '@storybook/react';
 import { Title, Subtitle, Description, Primary, Stories } from '@storybook/addon-docs/blocks';
 
-import { pluginServices, stubServiceRegistry } from '../public/services';
+import { servicesContextDecorator } from './decorator';
 
-if (!pluginServices.isStarted()) {
-  stubServiceRegistry.start({});
-  pluginServices.setRegistry(stubServiceRegistry);
-}
+addDecorator(servicesContextDecorator);
 
 export const parameters = {
   docs: {

@@ -16,33 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 import { PluginServiceFactory } from '../create';
-import { PresentationDashboardsService } from '..';
+import { PresentationCapabilitiesService } from '..';
 
-// TODO (clint): Create set of dashboards to stub and return.
+type CapabilitiesServiceFactory = PluginServiceFactory<PresentationCapabilitiesService>;
 
-type DashboardsServiceFactory = PluginServiceFactory<PresentationDashboardsService>;
-
-function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-export const dashboardsServiceFactory: DashboardsServiceFactory = () => ({
-  findDashboards: async (query: string = '', _fields: string[] = []) => {
-    if (!query) {
-      return [];
-    }
-
-    await sleep(2000);
-    return [];
-  },
-  findDashboardsByTitle: async (title: string) => {
-    if (!title) {
-      return [];
-    }
-
-    await sleep(2000);
-    return [];
-  },
+export const capabilitiesServiceFactory: CapabilitiesServiceFactory = () => ({
+  canAccessDashboards: () => true,
+  canCreateNewDashboards: () => true,
+  canEditDashboards: () => true,
 });

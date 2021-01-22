@@ -17,32 +17,14 @@
  * under the License.
  */
 
-import { PluginServiceFactory } from '../create';
-import { PresentationDashboardsService } from '..';
+import React from 'react';
 
-// TODO (clint): Create set of dashboards to stub and return.
+import { pluginServices } from '../public/services';
+import { registry } from '../public/services/stub';
 
-type DashboardsServiceFactory = PluginServiceFactory<PresentationDashboardsService>;
+pluginServices.setRegistry(registry.start({}));
+const ContextProvider = pluginServices.getContextProvider();
 
-function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-export const dashboardsServiceFactory: DashboardsServiceFactory = () => ({
-  findDashboards: async (query: string = '', _fields: string[] = []) => {
-    if (!query) {
-      return [];
-    }
-
-    await sleep(2000);
-    return [];
-  },
-  findDashboardsByTitle: async (title: string) => {
-    if (!title) {
-      return [];
-    }
-
-    await sleep(2000);
-    return [];
-  },
-});
+export const servicesContextDecorator = (story: Function) => (
+  <ContextProvider>{story()}</ContextProvider>
+);

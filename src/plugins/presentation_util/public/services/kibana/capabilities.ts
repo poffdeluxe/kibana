@@ -16,33 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import { PresentationUtilPluginStartDeps } from '../../types';
+import { KibanaPluginServiceFactory } from '../create';
+import { PresentationCapabilitiesService } from '..';
 
-import { PluginServiceFactory } from '../create';
-import { PresentationDashboardsService } from '..';
+export type CapabilitiesServiceFactory = KibanaPluginServiceFactory<
+  PresentationCapabilitiesService,
+  PresentationUtilPluginStartDeps
+>;
 
-// TODO (clint): Create set of dashboards to stub and return.
+export const capabilitiesServiceFactory: CapabilitiesServiceFactory = ({ coreStart }) => {
+  const { dashboard } = coreStart.application.capabilities;
 
-type DashboardsServiceFactory = PluginServiceFactory<PresentationDashboardsService>;
-
-function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-export const dashboardsServiceFactory: DashboardsServiceFactory = () => ({
-  findDashboards: async (query: string = '', _fields: string[] = []) => {
-    if (!query) {
-      return [];
-    }
-
-    await sleep(2000);
-    return [];
-  },
-  findDashboardsByTitle: async (title: string) => {
-    if (!title) {
-      return [];
-    }
-
-    await sleep(2000);
-    return [];
-  },
-});
+  return {
+    canAccessDashboards: () => Boolean(dashboard.show),
+    canCreateNewDashboards: () => Boolean(dashboard.createNew),
+    canEditDashboards: () => !Boolean(dashboard.hideWriteControls),
+  };
+};

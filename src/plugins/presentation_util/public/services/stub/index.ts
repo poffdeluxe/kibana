@@ -18,13 +18,16 @@
  */
 
 import { dashboardsServiceFactory } from './dashboards';
-import { PluginServiceProvider, PluginServiceProviders, PluginServiceRegistry } from '../create';
+import { capabilitiesServiceFactory } from './capabilities';
+import { PluginServiceProviders, PluginServiceProvider, PluginServiceRegistry } from '../create';
 import { PresentationUtilServices } from '..';
 
 export { dashboardsServiceFactory } from './dashboards';
+export { capabilitiesServiceFactory } from './capabilities';
 
 export const providers: PluginServiceProviders<PresentationUtilServices> = {
   dashboards: new PluginServiceProvider(dashboardsServiceFactory),
+  capabilities: new PluginServiceProvider(capabilitiesServiceFactory),
 };
 
-export const serviceRegistry = new PluginServiceRegistry<PresentationUtilServices>(providers);
+export const registry = new PluginServiceRegistry<PresentationUtilServices>(providers);

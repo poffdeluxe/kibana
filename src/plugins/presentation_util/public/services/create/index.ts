@@ -17,6 +17,8 @@
  * under the License.
  */
 
+import { mapValues } from 'lodash';
+
 import { PluginServiceRegistry } from './registry';
 
 export { PluginServiceRegistry } from './registry';
@@ -38,31 +40,37 @@ export {
 export class PluginServices<Services> {
   private registry: PluginServiceRegistry<Services, any> | null = null;
 
-  setRegistry(registry: PluginServiceRegistry<Services, any>) {
+  setRegistry(registry: PluginServiceRegistry<Services, any> | null) {
+    if (registry && !registry.isStarted()) {
+      throw new Error('Registry has not been started.');
+    }
+
     this.registry = registry;
-  }
-
-  getServices(): Services {
-    if (!this.registry) {
-      throw new Error('Registry not provided.');
-    }
-
-    if (!this.isStarted()) {
-      throw new Error('Registry not started.');
-    }
-
-    return this.registry.getServices();
   }
 
   hasRegistry() {
     return !!this.registry;
   }
 
-  isStarted() {
+  private getRegistry() {
     if (!this.registry) {
-      return false;
+      throw new Error('No registry has been provided.');
     }
 
-    return this.registry.isStarted();
+    return this.registry;
+  }
+
+  getContextProvider() {
+    return this.getRegistry().getContextProvider();
+  }
+
+  getContextHooks(): { [K in keyof Services]: { useContext: () => Services[K] } } {
+    const registry = this.getRegistry();
+    const providers = registry.getServiceProviders();
+
+    // @ts-expect-error Need to fix this; the type isn't fully understood inferred.
+    return mapValues(providers, (provider) => ({
+      useContext: provider.useContext(),
+    }));
   }
 }

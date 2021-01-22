@@ -28,6 +28,7 @@ import {
 } from '../../../../plugins/saved_objects/public';
 
 import './saved_object_save_modal_dashboard.scss';
+import { pluginServices } from '../services';
 import { SaveModalDashboardSelector } from './saved_object_save_modal_dashboard_selector';
 
 interface SaveModalDocumentInfo {
@@ -49,22 +50,34 @@ export function SavedObjectSaveModalDashboard(props: SaveModalDashboardProps) {
   const { id: documentId } = documentInfo;
   const initialCopyOnSave = !Boolean(documentId);
 
+  const { capabilities } = pluginServices.getContextHooks();
+  const {
+    canAccessDashboards,
+    canCreateNewDashboards,
+    canEditDashboards,
+  } = capabilities.useContext();
+
+  const disableDashboardOptions =
+    !canAccessDashboards() || (!canCreateNewDashboards && !canEditDashboards);
+
   const [dashboardOption, setDashboardOption] = useState<'new' | 'existing' | null>(
-    documentId ? null : 'existing'
+    documentId || disableDashboardOptions ? null : 'existing'
   );
   const [selectedDashboard, setSelectedDashboard] = useState<{ id: string; name: string } | null>(
     null
   );
   const [copyOnSave, setCopyOnSave] = useState<boolean>(initialCopyOnSave);
 
-  const rightOptions = () => (
-    <SaveModalDashboardSelector
-      onSelect={(dash) => {
-        setSelectedDashboard(dash);
-      }}
-      {...{ copyOnSave, documentId }}
-    />
-  );
+  const rightOptions = !disableDashboardOptions
+    ? () => (
+        <SaveModalDashboardSelector
+          onSelect={(dash) => {
+            setSelectedDashboard(dash);
+          }}
+          {...{ copyOnSave, documentId, canCreateNewDashboards, canEditDashboards }}
+        />
+      )
+    : null;
 
   const onCopyOnSaveChange = (newCopyOnSave: boolean) => {
     setDashboardOption(null);

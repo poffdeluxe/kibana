@@ -17,14 +17,13 @@
  * under the License.
  */
 
-import { PresentationUtilServices } from './services';
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface PresentationUtilPluginSetup {}
 
-export interface PresentationUtilPluginSetup {
-  getServices: () => Promise<PresentationUtilServices>;
+export interface PresentationUtilPluginStart {
+  ContextProvider: React.FC;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface PresentationUtilPluginStart {}
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface PresentationUtilPluginSetupDeps {}
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

@@ -18,7 +18,7 @@
  */
 
 import { BehaviorSubject } from 'rxjs';
-import { CoreSetup, CoreStart, AppUpdater } from 'src/core/public';
+import { CoreStart, AppUpdater } from 'src/core/public';
 
 /**
  * A factory function for creating a service.
@@ -27,21 +27,16 @@ import { CoreSetup, CoreStart, AppUpdater } from 'src/core/public';
  * The `StartParameters` generic determines what parameters are expected to
  * create the service.
  */
-export type PluginServiceFactory<Service, StartParameters = {}> = (
-  params: StartParameters
-) => Service;
+export type PluginServiceFactory<Service, Parameters = {}> = (params: Parameters) => Service;
 
 /**
  * Parameters necessary to create a Kibana-based service, (e.g. during Plugin
  * startup or setup).
  *
- * The `Setup` generic refers to the specific Plugin `TPluginsSetup`.
  * The `Start` generic refers to the specific Plugin `TPluginsStart`.
  */
-export interface KibanaPluginServiceParams<Setup, Start> {
-  coreSetup: CoreSetup;
+export interface KibanaPluginServiceParams<Start extends {}> {
   coreStart: CoreStart;
-  setupPlugins: Setup;
   startPlugins: Start;
   appUpdater?: BehaviorSubject<AppUpdater>;
 }
@@ -53,6 +48,6 @@ export interface KibanaPluginServiceParams<Setup, Start> {
  * The `Setup` generic refers to the specific Plugin `TPluginsSetup`.
  * The `Start` generic refers to the specific Plugin `TPluginsStart`.
  */
-export type KibanaPluginServiceFactory<Service, Setup extends object, Start extends object> = (
-  params: KibanaPluginServiceParams<Setup, Start>
+export type KibanaPluginServiceFactory<Service, Start extends {}> = (
+  params: KibanaPluginServiceParams<Start>
 ) => Service;

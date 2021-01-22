@@ -31,7 +31,7 @@ import {
   ScopedHistory,
 } from 'kibana/public';
 
-import { PresentationUtilPluginSetup } from '../../../../src/plugins/presentation_util/public';
+import { PresentationUtilPluginStart } from '../../../../src/plugins/presentation_util/public';
 import {
   Storage,
   createKbnUrlTracker,
@@ -74,6 +74,7 @@ export interface VisualizePluginStartDependencies {
   savedObjects: SavedObjectsStart;
   dashboard: DashboardStart;
   savedObjectsTaggingOss?: SavedObjectTaggingOssPluginStart;
+  presentationUtil: PresentationUtilPluginStart;
 }
 
 export interface VisualizePluginSetupDependencies {
@@ -82,7 +83,6 @@ export interface VisualizePluginSetupDependencies {
   data: DataPublicPluginSetup;
   share?: SharePluginSetup;
   uiActions: UiActionsSetup;
-  presentationUtil: PresentationUtilPluginSetup;
 }
 
 export interface VisualizePluginSetup {
@@ -107,14 +107,7 @@ export class VisualizePlugin
 
   public async setup(
     core: CoreSetup<VisualizePluginStartDependencies>,
-    {
-      home,
-      urlForwarding,
-      data,
-      share,
-      uiActions,
-      presentationUtil,
-    }: VisualizePluginSetupDependencies
+    { home, urlForwarding, data, share, uiActions }: VisualizePluginSetupDependencies
   ) {
     const {
       appMounted,
@@ -224,6 +217,7 @@ export class VisualizePlugin
           dashboard: pluginsStart.dashboard,
           setHeaderActionMenu: params.setHeaderActionMenu,
           savedObjectsTagging: pluginsStart.savedObjectsTaggingOss?.getTaggingApi(),
+          presentationUtil: pluginsStart.presentationUtil,
         };
 
         params.element.classList.add('visAppWrapper');

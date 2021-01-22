@@ -18,25 +18,28 @@
  */
 
 import { dashboardsServiceFactory } from './dashboards';
+import { capabilitiesServiceFactory } from './capabilities';
 import {
-  PluginServiceProvider,
-  KibanaPluginServiceParams,
   PluginServiceProviders,
+  KibanaPluginServiceParams,
+  PluginServiceProvider,
   PluginServiceRegistry,
 } from '../create';
-import { PresentationUtilPluginSetup, PresentationUtilPluginStart } from '../../types';
+import { PresentationUtilPluginStartDeps } from '../../types';
 import { PresentationUtilServices } from '..';
 
 export { dashboardsServiceFactory } from './dashboards';
+export { capabilitiesServiceFactory } from './capabilities';
 
 export const providers: PluginServiceProviders<
   PresentationUtilServices,
-  KibanaPluginServiceParams<PresentationUtilPluginSetup, PresentationUtilPluginStart>
+  KibanaPluginServiceParams<PresentationUtilPluginStartDeps>
 > = {
   dashboards: new PluginServiceProvider(dashboardsServiceFactory),
+  capabilities: new PluginServiceProvider(capabilitiesServiceFactory),
 };
 
-export const serviceRegistry = new PluginServiceRegistry<
+export const registry = new PluginServiceRegistry<
   PresentationUtilServices,
-  KibanaPluginServiceParams<PresentationUtilPluginSetup, PresentationUtilPluginStart>
+  KibanaPluginServiceParams<PresentationUtilPluginStartDeps>
 >(providers);
