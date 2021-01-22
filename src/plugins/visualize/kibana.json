@@ -1,18 +1,5 @@
 {
   "id": "visualize",
-  "version": "kibana",
-  "server": true,
-  "ui": true,
-  "requiredPlugins": [
-    "data",
-    "urlForwarding",
-    "navigation",
-    "savedObjects",
-    "visualizations",
-    "embeddable",
-    "dashboard",
-    "uiActions"
-  ],
   "optionalPlugins": [
     "home",
     "share",
@@ -22,7 +9,20 @@
     "kibanaUtils",
     "kibanaReact",
     "home",
-    "presentationUtil",
     "discover"
-  ]
+  ],
+  "requiredPlugins": [
+    "data",
+    "urlForwarding",
+    "navigation",
+    "savedObjects",
+    "visualizations",
+    "embeddable",
+    "dashboard",
+    "uiActions",
+    "presentationUtil"
+  ],
+  "server": true,
+  "ui": true,
+  "version": "kibana"
 }

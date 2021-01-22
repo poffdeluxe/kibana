@@ -71,6 +71,7 @@ export const getTopNavConfig = (
     i18n: { Context: I18nContext },
     dashboard,
     savedObjectsTagging,
+    presentationUtil,
   }: VisualizeServices
 ) => {
   const { vis, embeddableHandler } = visInstance;
@@ -402,14 +403,15 @@ export const getTopNavConfig = (
                     }
                   />
                 ) : (
-                  <SavedObjectSaveModalDashboard
-                    documentInfo={savedVis || { title: '' }}
-                    onSave={onSave}
-                    tagOptions={tagOptions}
-                    objectType={'visualization'}
-                    onClose={() => {}}
-                    savedObjectsClient={savedObjectsClient}
-                  />
+                  <presentationUtil.ContextProvider>
+                    <SavedObjectSaveModalDashboard
+                      documentInfo={savedVis || { title: '' }}
+                      onSave={onSave}
+                      tagOptions={tagOptions}
+                      objectType={'visualization'}
+                      onClose={() => {}}
+                    />
+                  </presentationUtil.ContextProvider>
                 );
               showSaveModal(saveModal, I18nContext);
             },
