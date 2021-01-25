@@ -88,7 +88,6 @@ export const SaveModal = (props: Props) => {
   return (
     <TagEnhancedSavedObjectSaveModalDashboard
       savedObjectsTagging={savedObjectsTagging}
-      savedObjectsClient={savedObjectsClient}
       initialTags={tagsIds}
       onSave={(saveProps) => {
         const saveToLibrary = saveProps.dashboardId === null;
