@@ -56,6 +56,7 @@ import { DataPublicPluginStart } from '../../../../src/plugins/data/public';
 import { LicensingPluginSetup, LicensingPluginStart } from '../../licensing/public';
 import { StartContract as FileUploadStartContract } from '../../file_upload/public';
 import { SavedObjectsStart } from '../../../../src/plugins/saved_objects/public';
+import { PresentationUtilPluginStart } from '../../../../src/plugins/presentation_util/public';
 import {
   getIsEnterprisePlus,
   registerLicensedFeatures,
@@ -87,6 +88,7 @@ export interface MapsPluginStartDependencies {
   savedObjects: SavedObjectsStart;
   dashboard: DashboardStart;
   savedObjectsTagging?: SavedObjectTaggingPluginStart;
+  presentationUtil: PresentationUtilPluginStart;
 }
 
 /**
