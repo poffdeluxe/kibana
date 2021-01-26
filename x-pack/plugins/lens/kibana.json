@@ -1,9 +1,26 @@
 {
+  "configPath": [
+    "xpack",
+    "lens"
+  ],
+  "extraPublicDirs": [
+    "common/constants"
+  ],
   "id": "lens",
-  "version": "8.0.0",
   "kibanaVersion": "kibana",
-  "server": true,
-  "ui": true,
+  "optionalPlugins": [
+    "usageCollection",
+    "taskManager",
+    "globalSearch",
+    "savedObjectsTagging"
+  ],
+  "requiredBundles": [
+    "savedObjects",
+    "kibanaUtils",
+    "kibanaReact",
+    "embeddable",
+    "lensOss"
+  ],
   "requiredPlugins": [
     "data",
     "charts",
@@ -15,10 +32,10 @@
     "charts",
     "uiActions",
     "embeddable",
-    "share"
+    "share",
+    "presentationUtil"
   ],
-  "optionalPlugins": ["usageCollection", "taskManager", "globalSearch", "savedObjectsTagging"],
-  "configPath": ["xpack", "lens"],
-  "extraPublicDirs": ["common/constants"],
-  "requiredBundles": ["savedObjects", "kibanaUtils", "kibanaReact", "embeddable", "lensOss", "presentationUtil"]
+  "server": true,
+  "ui": true,
+  "version": "8.0.0"
 }
