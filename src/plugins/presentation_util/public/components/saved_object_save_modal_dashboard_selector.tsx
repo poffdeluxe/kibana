@@ -6,7 +6,7 @@
  * Public License, v 1.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 
 import { i18n } from '@kbn/i18n';
 import { FormattedMessage } from '@kbn/i18n/react';
@@ -29,18 +29,17 @@ import './saved_object_save_modal_dashboard.scss';
 export interface SaveModalDashboardSelectorProps {
   copyOnSave: boolean;
   documentId?: string;
-  onSelect: DashboardPickerProps['onChange'];
+  onSelectDashboard: DashboardPickerProps['onChange'];
+
+  dashboardOption: 'new' | 'existing' | null;
+  onChange: (dashboardOption: 'new' | 'existing' | null) => void;
 }
 
 export function SaveModalDashboardSelector(props: SaveModalDashboardSelectorProps) {
-  const { documentId, onSelect, copyOnSave } = props;
+  const { documentId, onSelectDashboard, dashboardOption, onChange, copyOnSave } = props;
 
   const { capabilities } = pluginServices.getContextHooks();
   const { canCreateNewDashboards, canEditDashboards } = capabilities.useContext();
-
-  const [dashboardOption, setDashboardOption] = useState<'new' | 'existing' | null>(
-    documentId ? null : 'existing'
-  );
 
   const isDisabled = !copyOnSave && !!documentId;
 
@@ -85,13 +84,13 @@ export function SaveModalDashboardSelector(props: SaveModalDashboardSelectorProp
                       defaultMessage: 'Existing',
                     }
                   )}
-                  onChange={() => setDashboardOption('existing')}
+                  onChange={() => onChange('existing')}
                   disabled={isDisabled}
                 />
                 <div className="savAddDashboard__searchDashboards">
                   <DashboardPicker
                     isDisabled={dashboardOption !== 'existing'}
-                    onChange={onSelect}
+                    onChange={onSelectDashboard}
                   />
                 </div>
                 <EuiSpacer size="s" />
@@ -110,7 +109,7 @@ export function SaveModalDashboardSelector(props: SaveModalDashboardSelectorProp
                       defaultMessage: 'New',
                     }
                   )}
-                  onChange={() => setDashboardOption('new')}
+                  onChange={() => onChange('new')}
                   disabled={isDisabled}
                 />
                 <EuiSpacer size="s" />
@@ -123,7 +122,7 @@ export function SaveModalDashboardSelector(props: SaveModalDashboardSelectorProp
               label={i18n.translate('presentationUtil.saveModalDashboard.libraryOptionLabel', {
                 defaultMessage: 'No dashboard, but add to library',
               })}
-              onChange={() => setDashboardOption(null)}
+              onChange={() => onChange(null)}
               disabled={isDisabled}
             />
           </div>
