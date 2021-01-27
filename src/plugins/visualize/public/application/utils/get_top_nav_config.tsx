@@ -380,40 +380,43 @@ export const getTopNavConfig = (
                 );
               }
 
-              const saveModal =
-                !!originatingApp ||
-                !dashboard.dashboardFeatureFlagConfig.allowByValueEmbeddables ? (
-                  <SavedObjectSaveModalOrigin
-                    documentInfo={savedVis || { title: '' }}
-                    onSave={onSave}
-                    options={tagOptions}
-                    getAppNameFromId={stateTransfer.getAppNameFromId}
-                    objectType={'visualization'}
-                    onClose={() => {}}
-                    originatingApp={originatingApp}
-                    returnToOriginSwitchLabel={
-                      originatingApp && embeddableId
-                        ? i18n.translate('visualize.topNavMenu.updatePanel', {
-                            defaultMessage: 'Update panel on {originatingAppName}',
-                            values: {
-                              originatingAppName: stateTransfer.getAppNameFromId(originatingApp),
-                            },
-                          })
-                        : undefined
-                    }
-                  />
-                ) : (
-                  <presentationUtil.ContextProvider>
-                    <SavedObjectSaveModalDashboard
-                      documentInfo={savedVis || { title: '' }}
-                      onSave={onSave}
-                      tagOptions={tagOptions}
-                      objectType={'visualization'}
-                      onClose={() => {}}
-                    />
-                  </presentationUtil.ContextProvider>
-                );
-              showSaveModal(saveModal, I18nContext);
+              const useByRefFlow =
+                !!originatingApp || !dashboard.dashboardFeatureFlagConfig.allowByValueEmbeddables;
+
+              const saveModal = useByRefFlow ? (
+                <SavedObjectSaveModalOrigin
+                  documentInfo={savedVis || { title: '' }}
+                  onSave={onSave}
+                  options={tagOptions}
+                  getAppNameFromId={stateTransfer.getAppNameFromId}
+                  objectType={'visualization'}
+                  onClose={() => {}}
+                  originatingApp={originatingApp}
+                  returnToOriginSwitchLabel={
+                    originatingApp && embeddableId
+                      ? i18n.translate('visualize.topNavMenu.updatePanel', {
+                          defaultMessage: 'Update panel on {originatingAppName}',
+                          values: {
+                            originatingAppName: stateTransfer.getAppNameFromId(originatingApp),
+                          },
+                        })
+                      : undefined
+                  }
+                />
+              ) : (
+                <SavedObjectSaveModalDashboard
+                  documentInfo={savedVis || { title: '' }}
+                  onSave={onSave}
+                  tagOptions={tagOptions}
+                  objectType={'visualization'}
+                  onClose={() => {}}
+                />
+              );
+              showSaveModal(
+                saveModal,
+                I18nContext,
+                !useByRefFlow ? presentationUtil.ContextProvider : undefined
+              );
             },
           },
         ]
