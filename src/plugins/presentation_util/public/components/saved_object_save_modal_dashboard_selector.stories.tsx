@@ -6,7 +6,7 @@
  * Public License, v 1.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { action } from '@storybook/addon-actions';
 
 import { SaveModalDashboardSelector } from './saved_object_save_modal_dashboard_selector';
@@ -32,9 +32,13 @@ export function Example({
   copyOnSave: boolean;
   hasDocumentId: boolean;
 }) {
+  const [dashboardOption, setDashboardOption] = useState<'new' | 'existing' | null>('existing');
+
   return (
     <SaveModalDashboardSelector
-      onSelect={action('onSelect')}
+      onSelectDashboard={action('onSelect')}
+      onChange={setDashboardOption}
+      dashboardOption={dashboardOption}
       copyOnSave={copyOnSave}
       documentId={hasDocumentId ? 'abc' : undefined}
     />

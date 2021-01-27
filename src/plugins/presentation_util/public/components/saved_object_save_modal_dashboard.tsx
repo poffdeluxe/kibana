@@ -60,10 +60,13 @@ export function SavedObjectSaveModalDashboard(props: SaveModalDashboardProps) {
   const rightOptions = !disableDashboardOptions
     ? () => (
         <SaveModalDashboardSelector
-          onSelect={(dash) => {
+          onSelectDashboard={(dash) => {
             setSelectedDashboard(dash);
           }}
-          {...{ copyOnSave, documentId }}
+          onChange={(option) => {
+            setDashboardOption(option);
+          }}
+          {...{ copyOnSave, documentId, dashboardOption }}
         />
       )
     : null;
