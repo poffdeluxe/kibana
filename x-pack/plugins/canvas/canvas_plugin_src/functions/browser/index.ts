@@ -10,5 +10,13 @@ import { functions as externalFunctions } from '../external';
 import { location } from './location';
 import { markdown } from './markdown';
 import { urlparam } from './urlparam';
+import { escountOther } from './escountOther';
 
-export const functions = [location, markdown, urlparam, ...commonFunctions, ...externalFunctions];
+export const functions = [
+  location,
+  markdown,
+  urlparam,
+  escountOther,
+  ...commonFunctions,
+  ...externalFunctions,
+];
