@@ -18,6 +18,7 @@ import { loadSampleData } from './sample_data';
 import { setupInterpreter } from './setup_interpreter';
 import { customElementType, workpadType, workpadTemplateType } from './saved_objects';
 import { initializeTemplates } from './templates';
+import { ESSqlSearchStrategyProvider } from './lib/es_sql_strategy';
 
 interface PluginsSetup {
   expressions: ExpressionsServerSetup;
@@ -87,6 +88,11 @@ export class CanvasPlugin implements Plugin {
     registerCanvasUsageCollector(plugins.usageCollection, globalConfig.kibana.index);
 
     setupInterpreter(plugins.expressions);
+
+    coreSetup.getStartServices().then(([_, depsStart]) => {
+      const strategy = ESSqlSearchStrategyProvider(depsStart.data);
+      depsStart.data.search.registerSearchStrategy('essql', strategy);
+    });
   }
 
   public start(coreStart: CoreStart) {

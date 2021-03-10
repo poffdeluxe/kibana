@@ -189,6 +189,7 @@ export const getFunctionHelp = (): FunctionHelpDict => ({
   dropdownControl,
   eq,
   escount,
+  escountOther: escount,
   esdocs,
   essql,
   exactly,
