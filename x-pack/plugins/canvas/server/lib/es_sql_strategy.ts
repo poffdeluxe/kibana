@@ -5,13 +5,21 @@
  * 2.0.
  */
 
-import { map } from 'rxjs/operators';
+import { from } from 'rxjs';
+import { map, zipObject } from 'lodash';
+
+import { IKibanaSearchRequest } from 'src/plugins/data/common';
 import { ISearchStrategy, PluginStart } from 'src/plugins/data/server';
+
+import { buildBoolArray } from './build_bool_array';
+import { sanitizeName } from './sanitize_name';
+import { normalizeType } from './normalize_type';
+
 // import { IMyStrategyResponse, IMyStrategyRequest } from '../common';
 
 import { ExpressionValueFilter } from '../../types';
 
-interface Args {
+interface Args extends IKibanaSearchRequest {
   count: number;
   query: string;
   timezone?: string;
@@ -33,104 +41,94 @@ type QueryResponse = CursorResponse & {
 };
 
 interface Response {
-  type: 'datatable';
-  meta: {
-    type: 'essql';
-  };
   columns: Array<{
+    id: string;
     name: string;
-    type: string;
+    meta: {
+      type: string;
+    };
   }>;
-  rows: string[][];
+  rows: any;
+
+  rawResponse: any;
 }
 
 export const ESSqlSearchStrategyProvider = (data: PluginStart): ISearchStrategy<Args, Response> => {
-  const es = data.search.getSearchStrategy('ese');
   return {
-    search: (request, options, deps) => {
+    search: (request, options, { esClient }) => {
       const { count, query, filter, timezone } = request;
-      let response = es.transit.request({
-        path: '/_sql?format=json',
-        method: 'POST',
-        body: {
-          query,
-          time_zone: timezone,
-          fetch_size: count,
-          client_id: 'canvas',
-          filter: {
-            bool: {
-              must: [{ match_all: {} }, ...buildBoolArray(filter)],
+
+      const searchUntilEnd = async () => {
+        let response = (
+          await esClient.asCurrentUser.transport.request({
+            path: '/_sql?format=json',
+            method: 'POST',
+            body: {
+              query,
+              time_zone: timezone,
+              fetch_size: count,
+              client_id: 'canvas',
+              filter: {
+                bool: {
+                  must: [{ match_all: {} }, ...buildBoolArray(filter)],
+                },
+              },
             },
-          },
-        },
-      });
-      // let response: QueryResponse = await elasticsearchClient<QueryResponse>('transport.request', {
-      //   path: '/_sql?format=json',
-      //   method: 'POST',
-      //   body: {
-      //     query,
-      //     time_zone: timezone,
-      //     fetch_size: count,
-      //     client_id: 'canvas',
-      //     filter: {
-      //       bool: {
-      //         must: [{ match_all: {} }, ...buildBoolArray(filter)],
-      //       },
-      //     },
-      //   },
-      // });
+          })
+        ).body as QueryResponse;
 
-      const columns = response.columns.map(({ name, type }) => {
+        const columns = response.columns.map(({ name, type }) => {
+          return {
+            id: sanitizeName(name),
+            name: sanitizeName(name),
+            meta: { type: normalizeType(type) },
+          };
+        });
+        const columnNames = map(columns, 'name');
+        let rows = response.rows.map((row) => zipObject(columnNames, row));
+
+        while (rows.length < count && response.cursor !== undefined) {
+          response = (
+            await esClient.asCurrentUser.transport.request({
+              path: '/_sql?format=json',
+              method: 'POST',
+              body: {
+                cursor: response.cursor,
+              },
+            })
+          ).body as QueryResponse;
+
+          rows = [...rows, ...response.rows.map((row) => zipObject(columnNames, row))];
+        }
+
+        if (response.cursor !== undefined) {
+          await esClient.asCurrentUser.transport.request({
+            path: '/_sql/close',
+            method: 'POST',
+            body: {
+              cursor: response.cursor,
+            },
+          });
+        }
+
         return {
-          id: sanitizeName(name),
-          name: sanitizeName(name),
-          meta: { type: normalizeType(type) },
+          // type: 'datatable',
+          // meta: {
+          //   type: 'essql',
+          // },
+          columns,
+          rows,
+          rawResponse: response,
         };
-      });
-      const columnNames = map(columns, 'name');
-      let rows = response.rows.map((row) => zipObject(columnNames, row));
-
-      while (rows.length < count && response.cursor !== undefined) {
-        response = await elasticsearchClient<QueryResponse>('transport.request', {
-          path: '/_sql?format=json',
-          method: 'POST',
-          body: {
-            cursor: response.cursor,
-          },
-        });
-
-        rows = [...rows, ...response.rows.map((row) => zipObject(columnNames, row))];
-      }
-
-      if (response.cursor !== undefined) {
-        elasticsearchClient('transport.request', {
-          path: '/_sql/close',
-          method: 'POST',
-          body: {
-            cursor: response.cursor,
-          },
-        });
-      }
-
-      return {
-        type: 'datatable',
-        meta: {
-          type: 'essql',
-        },
-        columns,
-        rows,
       };
+
+      return from(searchUntilEnd());
     },
-    // es.search(request, options, deps).pipe(
-    //   map((esSearchRes) => ({
-    //     ...esSearchRes,
-    //     cool: request.get_cool ? 'YES' : 'NOPE',
-    //   }))
-    // ),
+
     cancel: async (id, options, deps) => {
-      if (es.cancel) {
-        await es.cancel(id, options, deps);
-      }
+      // if (es.cancel) {
+      //   await es.cancel(id, options, deps);
+      // }
     },
   };
 };

@@ -6,6 +6,10 @@
  */
 
 import { CoreSetup, PluginInitializerContext, Plugin, Logger, CoreStart } from 'src/core/server';
+import {
+  PluginSetup as DataPluginSetup,
+  PluginStart as DataPluginStart,
+} from 'src/plugins/data/server';
 import { ExpressionsServerSetup } from 'src/plugins/expressions/server';
 import { BfetchServerSetup } from 'src/plugins/bfetch/server';
 import { UsageCollectionSetup } from 'src/plugins/usage_collection/server';
@@ -25,7 +29,12 @@ interface PluginsSetup {
   features: FeaturesPluginSetup;
   home: HomeServerPluginSetup;
   bfetch: BfetchServerSetup;
+  data: DataPluginSetup;
   usageCollection?: UsageCollectionSetup;
+}
+
+interface PluginsStart {
+  data: DataPluginStart;
 }
 
 export class CanvasPlugin implements Plugin {
@@ -34,7 +43,7 @@ export class CanvasPlugin implements Plugin {
     this.logger = initializerContext.logger.get();
   }
 
-  public setup(coreSetup: CoreSetup, plugins: PluginsSetup) {
+  public setup(coreSetup: CoreSetup<PluginsStart>, plugins: PluginsSetup) {
     coreSetup.savedObjects.registerType(customElementType);
     coreSetup.savedObjects.registerType(workpadType);
     coreSetup.savedObjects.registerType(workpadTemplateType);
@@ -91,7 +100,7 @@ export class CanvasPlugin implements Plugin {
 
     coreSetup.getStartServices().then(([_, depsStart]) => {
       const strategy = ESSqlSearchStrategyProvider(depsStart.data);
-      depsStart.data.search.registerSearchStrategy('essql', strategy);
+      plugins.data.search.registerSearchStrategy('essql', strategy);
     });
   }
 

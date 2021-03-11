@@ -192,6 +192,7 @@ export const getFunctionHelp = (): FunctionHelpDict => ({
   escountOther: escount,
   esdocs,
   essql,
+  essqlOther: essql,
   exactly,
   filterrows,
   filters,

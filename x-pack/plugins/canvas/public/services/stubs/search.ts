@@ -5,8 +5,10 @@
  * 2.0.
  */
 
-import { IEsSearchResponse, IEsSearchRequest } from 'src/plugins/data/common';
+import { SearchService } from '../platform';
 
-// interface ESSqlSearchStrategyRequest extends IEsSearchRequest {}
+const noop = (..._args: any[]): any => {};
 
-// interface ESSqlSearchStrategyResponse extends IEsSearchResponse {}
+export const searchService: SearchService = {
+  search: noop,
+};
